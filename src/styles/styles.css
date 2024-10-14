@@ -3,9 +3,19 @@
 @tailwind utilities;
 
 html {
-  @apply w-screen h-fit;
+  @apply w-full h-fit overflow-x-hidden;
 }
 
 body {
-  @apply w-screen h-fit;
+  @apply w-full h-fit overflow-x-hidden;
+}
+
+* {
+
+  margin: 0;
+  padding: 0;
+
+  box-sizing: border-box;
+  /* outline: 1px solid black; */
+
 }

@@ -1,4 +1,4 @@
-import { magra } from "@/fonts";
+import { magra_700 } from "@/fonts";
 
 export default async function MessagesBoard() {
   const readMessages = 0;
@@ -6,7 +6,7 @@ export default async function MessagesBoard() {
   return (
     <div className={`w-full h-fit flex flex-col p-[20px]`}>
       <div
-        className={`${magra.className} font-bold text-[20px] text-[#ED1818]`}
+        className={`${magra_700.className} font-bold text-[20px] text-[#ED1818]`}
       >
         VERIFICĂ MESAJE
       </div>

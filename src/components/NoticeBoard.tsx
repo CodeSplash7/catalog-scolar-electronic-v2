@@ -1,4 +1,4 @@
-import { magra } from "@/fonts";
+import { magra_700 } from "@/fonts";
 
 export default async function NoticeBoard() {
   const notices = [
@@ -19,7 +19,7 @@ export default async function NoticeBoard() {
   return (
     <div className="w-full">
       <div
-        className={`w-full text-start ${magra.className} text-[#182921] text-[40px] font-bold`}
+        className={`w-full text-start ${magra_700.className} text-[#182921] text-[40px] font-bold`}
       >
         Avizier
       </div>
@@ -29,7 +29,7 @@ export default async function NoticeBoard() {
           key={index}
           className={`w-full text-start flex flex-col gap-[8px]`}
         >
-          <div className={` text-[20px] ${magra.className} font-bold`}>
+          <div className={` text-[20px] ${magra_700.className} font-bold`}>
             {notice.title}
           </div>
           <div
@@ -41,7 +41,7 @@ export default async function NoticeBoard() {
           <div className={`text-[#454545] text-[15px] font-medium`}>
             {notice.message}
           </div>
-          <br/>
+          <br />
         </div>
       ))}
     </div>

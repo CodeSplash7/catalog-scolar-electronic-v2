@@ -1,5 +1,4 @@
 export default async function Separator({ h }: { h: number }) {
-  // return <div className={`w-full h-[128px] bg-[#d43a3a]`}></div>;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
