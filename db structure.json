@@ -1,0 +1,78 @@
+{
+  "users": [
+    {
+      "id": "ObjectId()",
+      "profile": {
+        "class": {
+          "gradeLevel": "I",
+          "section": "A"
+        },
+        "fullName": "BAM BAM BAM",
+        "curriculumId": "ObjectId()",
+        "fathersInitial": "A"
+      },
+      "account": {
+        "subscriptionId": "ObjectId()",
+        "email": "fasjdfl@fasfas.csdf",
+        "password": {
+          "salt": "fsafd",
+          "hash": "fasdf"
+        }
+      }
+    }
+  ],
+  "curriculums": [
+    {
+      "id": "ObjectId()",
+      "absences": {
+        "total": 3,
+        "excused": 0
+      },
+      "subjects": [
+        {
+          "id": "ObjectId()",
+          "subjectName": "Maths",
+          "grades": [
+            { "id": "ObjectId()", "score": 9, "date": "2023-09-26" },
+            { "id": "ObjectId()", "score": 3, "date": "2023-09-22" }
+          ],
+          "absences": [
+            { "id": "ObjectId()", "date": "2023-09-24", "excused": false },
+            { "id": "ObjectId()", "date": "2023-09-25", "excused": true }
+          ],
+          "activity": { "good": 0, "bad": 0 },
+          "conduit": 10
+        },
+        {
+          "id": "ObjectId()",
+          "subjectName": "History",
+          "grades": [{ "id": "ObjectId()", "score": 8, "date": "2023-09-27" }],
+          "absences": [
+            { "id": "ObjectId()", "date": "2023-10-24", "excused": false },
+            { "id": "ObjectId()", "date": "2023-11-25", "excused": true }
+          ],
+          "activity": { "good": 0, "bad": 0 },
+          "conduit": 10
+        }
+      ]
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "ObjectId()",
+      "status": "active",
+      "type": "monthly",
+      "startDate": "2024-10-01T00:00:00Z",
+      "endDate": "2025-10-01T00:00:00Z",
+      "nextPaymentDate": "2024-11-01T00:00:00Z",
+      "paymentHistory": [
+        {
+          "date": "2024-10-01T00:00:00Z",
+          "amount": 9.99,
+          "method": "credit_card",
+          "status": "successful"
+        }
+      ]
+    }
+  ]
+}

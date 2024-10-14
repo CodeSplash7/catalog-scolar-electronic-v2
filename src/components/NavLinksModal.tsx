@@ -10,7 +10,6 @@ export default function NavLinksModal({
   isOpen: boolean;
   closeModal: () => void;
 }) {
-
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={closeModal}>
@@ -38,7 +37,7 @@ export default function NavLinksModal({
               leaveTo="opacity-0 translate-x-full"
             >
               <Dialog.Panel className="flex flex-col fixed inset-y-0 right-0 w-[65%] h-screen transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <NavLinks />
+                <NavLinks closeModal={closeModal} />
               </Dialog.Panel>
             </Transition.Child>
           </div>
