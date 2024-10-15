@@ -1,19 +1,19 @@
-export interface User {
-  id: string; // ObjectId
+export interface UserDocument {
   profile: UserProfile;
   account: UserAccount;
 }
 
 export interface UserProfile {
-  class: UserClass;
-  fullName: string;
-  curriculumId: string; // ObjectId
+  userClass: UserClass;
+  firstName: string;
+  lastName: string;
   fathersInitial: string;
+  curriculumId: string; // ObjectId
 }
 
 export interface UserClass {
-  gradeLevel: string;
-  section: string;
+  gradeLevel: "V" | "VI" | "VII" | "VIII" | "IX" | "X" | "XI" | "XII";
+  section: "A" | "B" | "C" | "D" | "E" | null;
 }
 
 export interface UserAccount {

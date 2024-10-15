@@ -19,15 +19,26 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
-      "@mongodb/*": ["./src/mongodb/*"],
-      "@types/*": ["./src/types/*"],
-      "@server-utils": ["./src/server-utils/*"],
-      "@client-utils": ["./src/client-utils/*"],
-      "@general-utils": ["./src/general-utils/*"],
-      "@loading": ["./src/loading/*"],
-      "@page-components/*": ["./src/page-components/*"]
-    }
+      "@components/*": ["./src/components/*"],
+      "@mongodb/*": ["./src/lib/mongo/*"],
+      "@edgestore/*": ["./src/lib/edgestore/*"],
+      "@client-utils/*": ["./src/client-utils/*"],
+      "@server-utils/*": ["./src/server-utils/*"],
+      "@general-utils/*": ["./src/general-utils/*"],
+      "@pages/*": ["./src/page-components"],
+      "@loading/*": ["./src/loading"],
+      "@layouts/*": ["./src/layouts"],
+      "@types/*": ["./src/types"]
+    },
+    "target": "es2015"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/app/blogs/[year]/[month]/[day]/[blogName]/loading.tsx",
+    "src/utils/allSides"
+  ],
   "exclude": ["node_modules"]
 }

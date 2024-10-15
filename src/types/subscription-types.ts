@@ -1,16 +1,20 @@
-export interface Subscription {
-  id: string; // ObjectId
-  status: string; // e.g., "active", "inactive", etc.
-  type: string; // e.g., "monthly", "annual", etc.
-  startDate: string; // ISO date string
-  endDate: string; // ISO date string
-  nextPaymentDate: string; // ISO date string
+export interface SubscriptionDocument {
+  status: SubscriptionStatus;
+  type: SubscriptionType;
+  startDate: string | null;
+  endDate: string | null;
+  nextPaymentDate: string;
   paymentHistory: Payment[];
+  freeTrial: boolean;
+  trialDuration: number | null;
 }
 
 export interface Payment {
-  date: string; // ISO date string
-  amount: number; // Amount in currency
-  method: string; // e.g., "credit_card", "paypal", etc.
-  status: string; // e.g., "successful", "failed", etc.
+  date: string;
+  amount: number;
+  method: string;
+  status: string;
 }
+
+export type SubscriptionStatus = "active" | "inactive";
+export type SubscriptionType = "monthly" | "annual";

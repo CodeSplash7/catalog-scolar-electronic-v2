@@ -1,7 +1,6 @@
-export interface Curriculum {
-  id: string; // ObjectId
+export interface CurriculumDocument {
   absences: CurriculumAbsences;
-  subjects: Subject[];
+  subjects: SubjectDocument[];
 }
 
 export interface CurriculumAbsences {
@@ -9,23 +8,20 @@ export interface CurriculumAbsences {
   excused: number;
 }
 
-export interface Subject {
-  id: string; // ObjectId
+export interface SubjectDocument {
   subjectName: string;
-  grades: Grade[];
-  absences: Absence[];
+  grades: GradeDocument[];
+  absences: AbsenceDocument[];
   activity: Activity;
   conduit: number;
 }
 
-export interface Grade {
-  id: string; // ObjectId
+export interface GradeDocument {
   score: number;
   date: string; // ISO date string
 }
 
-export interface Absence {
-  id: string; // ObjectId
+export interface AbsenceDocument {
   date: string; // ISO date string
   excused: boolean;
 }
