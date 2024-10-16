@@ -2,8 +2,15 @@ import { AuthOptions, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import client from "@mongodb/index";
+import client from "@/mongodb/index";
 import { JWT } from "next-auth/jwt";
+import {
+  createNewUser,
+  getUserById,
+  getUserByUsername,
+  getUsers
+} from "@/mongodb/users";
+import { verifyPassword } from "@/server-utils/password-functions";
 
 // Extend the Session type to include the id property
 interface CustomSession extends Session {
@@ -19,6 +26,7 @@ interface CustomToken extends JWT {
 }
 
 const options: AuthOptions = {
+  debug: true,
   adapter: MongoDBAdapter(client),
   theme: {
     colorScheme: "light", // "auto" | "dark" | "light"
@@ -35,7 +43,6 @@ const options: AuthOptions = {
           type: "text",
           placeholder: "Type username..."
         },
-        email: { label: "Email", type: "email", placeholder: "Type email..." },
         password: {
           label: "Password",
           type: "password",
@@ -43,26 +50,19 @@ const options: AuthOptions = {
         }
       },
       async authorize(credentials, req) {
-        // const { result: appUser, error } = await getUserByEmail(
-        // credentials?.email
-        // );
-        // if (!appUser) return null;
-
-        // const correctInformation =
-        // appUser?.profile.username === credentials?.username;
-        // if (!correctInformation) return null;
-
-        // const password = appUser.account.password;
-        // const correctPassword = await verifyPassword(
-        // credentials.password,
-        // password.salt,
-        // password.hash
-        // );
-        // if (!correctPassword) return null;
-
+        const { result: appUser, error } = await getUserByUsername(
+          credentials?.username
+        );
+      
+        if (error || !appUser) return null;
+        const isValidPassword = await verifyPassword(
+          credentials?.password ?? null,
+          appUser?.account.password.salt ?? null,
+          appUser?.account.password.hash ?? null
+        );
+        if (!isValidPassword) return null;
         return {
-          id: String(appUser._id),
-          email: credentials?.email,
+          id: appUser._id.toString(),
           name: credentials?.username
         };
       }
@@ -80,6 +80,18 @@ const options: AuthOptions = {
       // customSession. = token.id; // Add user ID to the session
       customSession.user.id = (token as CustomToken).id;
       return customSession;
+    },
+    async signIn({ user, account, profile, email, credentials }) {
+      return true;
+      // const { result: users } = await getUsers();
+      // const appUser = users?.find(
+      //   (u) =>
+      //     u.account.email === user.email && u.profile.username === user.name
+      // );
+      // return appUser ? true : false;
+    },
+    async redirect({ url, baseUrl }) {
+      return baseUrl;
     }
   }
 };

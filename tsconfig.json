@@ -39,6 +39,6 @@
     ".next/types/**/*.ts",
     "src/app/blogs/[year]/[month]/[day]/[blogName]/loading.tsx",
     "src/utils/allSides"
-  ],
+, "src/server-utils/password-functions.ts"  ],
   "exclude": ["node_modules"]
 }

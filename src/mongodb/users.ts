@@ -12,6 +12,7 @@ import {
 import { stringifyId, stringifyIds } from "@/general-utils/stringify-ids";
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
 import removeDuplicateSpaces from "@/general-utils/removeDuplicateSpaces";
+import { generateUsername } from "@/general-utils/generateUsername";
 
 // Document with different ids type
 type UserDocumentWithObjectId = WithObjectId<UserDocument>;
@@ -41,7 +42,7 @@ async function init() {
     db = client.db(); // Log the database name
     users = db.collection("users");
   } catch (err) {
-    throw new Error("Failed to establish the database connection");
+    throw new Error("Failed to establish the database connection: " + err);
   }
 }
 (async () => await init())();
@@ -52,7 +53,6 @@ export const getUsers = async (
   try {
     if (!users) await init();
 
-    // Use filterProps for filtering and projection for selecting fields
     const response = (await users
       .find({}, { projection })
       .toArray()) as UserDocumentWithObjectId[];
@@ -75,7 +75,9 @@ export const getUserByUsername = async (
     const response = (await users.findOne({
       "profile.username": username
     })) as UserDocumentWithObjectId;
-    if (response === null) throw "Didn't find a user with the given username";
+
+    if (response === null)
+      throw "Didn't find a user with the given username: " + username;
 
     const result = stringifyId(response);
     return { result, error: null };
@@ -144,9 +146,12 @@ export const createNewUser = async (newUserInfo: {
     } = newUserInfo;
     const { salt, hash } = hashPassword(password);
 
-    if (await getUserByUsername(username)) throw "Username is taken!";
-    if (await getUserByEmail(username))
+    if ((await getUserByUsername(username)).result) throw "Username is taken!";
+    if ((await getUserByEmail(username)).result)
       throw "This email is already being used!";
+
+    const validFirstName = removeDuplicateSpaces(firstName);
+    const validLastName = removeDuplicateSpaces(lastName);
 
     const newUserDocument: UserDocument = {
       profile: {
@@ -154,6 +159,7 @@ export const createNewUser = async (newUserInfo: {
         firstName: removeDuplicateSpaces(firstName),
         lastName: removeDuplicateSpaces(lastName),
         fathersInitial: removeDuplicateSpaces(fathersInitial),
+        username: generateUsername(validFirstName, validLastName),
         curriculumId: "" // TODO: Gotta handle this somehow too
       },
       account: {

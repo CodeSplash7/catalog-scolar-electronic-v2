@@ -8,6 +8,7 @@ export interface UserProfile {
   firstName: string;
   lastName: string;
   fathersInitial: string;
+  username: string;
   curriculumId: string; // ObjectId
 }
 
