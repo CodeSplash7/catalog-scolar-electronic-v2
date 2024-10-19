@@ -1,6 +1,7 @@
 export interface CurriculumDocument {
   absences: CurriculumAbsences;
   subjects: SubjectDocument[];
+  overallAverage: number;
 }
 
 export interface CurriculumAbsences {

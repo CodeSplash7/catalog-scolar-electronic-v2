@@ -4,16 +4,11 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client from "@/mongodb/index";
 import { JWT } from "next-auth/jwt";
-import {
-  createNewUser,
-  getUserById,
-  getUserByUsername,
-  getUsers
-} from "@/mongodb/users";
+import { getUserById, getUserByUsername } from "@/mongodb/users";
 import { verifyPassword } from "@/server-utils/password-functions";
 
 // Extend the Session type to include the id property
-interface CustomSession extends Session {
+export interface CustomSession extends Session {
   user: {
     id: string; // Include other user properties if needed
     email: string;
@@ -53,7 +48,7 @@ const options: AuthOptions = {
         const { result: appUser, error } = await getUserByUsername(
           credentials?.username
         );
-      
+
         if (error || !appUser) return null;
         const isValidPassword = await verifyPassword(
           credentials?.password ?? null,
@@ -68,17 +63,25 @@ const options: AuthOptions = {
       }
     })
   ],
+  session: {
+    strategy: "jwt"
+  },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        (token as CustomToken).id = user.id;
+      const { result: appUser } = await getUserByUsername(
+        (token as CustomToken).name
+      );
+      if (appUser) {
+        token.name = appUser.profile.username;
+        token.id = appUser._id;
       }
+
       return token;
     },
     async session({ session, token }) {
-      const customSession = session as CustomSession; // Cast to CustomSession
-      // customSession. = token.id; // Add user ID to the session
+      const customSession = session as CustomSession;
       customSession.user.id = (token as CustomToken).id;
+
       return customSession;
     },
     async signIn({ user, account, profile, email, credentials }) {
