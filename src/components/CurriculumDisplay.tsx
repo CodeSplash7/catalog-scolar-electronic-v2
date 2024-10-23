@@ -1,10 +1,17 @@
 import { CurriculumDocument } from "@/types/curriculum-types";
-import Subject from "./Subject";
+import SubjectDisplay from "./Subject";
+import { WithObjectId } from "@/types/fetching-types";
 
 export default async function CurriculumDisplay({
   curriculum
 }: {
-  curriculum: CurriculumDocument;
+  curriculum: WithObjectId<CurriculumDocument>;
 }) {
-  return <div className={`flex flex-col w-full`}>{curriculum.subjects.map((s) => <Subject subject={s}/>)}</div>;
+  return (
+    <div className={`flex flex-col w-full gap-[16px] `}>
+      {curriculum.subjects.map((s) => (
+        <SubjectDisplay curriculum={curriculum} subject={s} />
+      ))}
+    </div>
+  );
 }

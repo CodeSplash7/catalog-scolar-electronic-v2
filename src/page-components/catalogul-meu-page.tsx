@@ -1,6 +1,8 @@
 "use server";
 
 import { CustomSession } from "@/app/api/auth/[...nextauth]/options";
+import ClickTracker from "@/components/ClickTracker";
+
 import CurriculumDisplay from "@/components/CurriculumDisplay";
 import { magra_400, magra_700 } from "@/fonts";
 import { getCurriculumById } from "@/mongodb/curriculums";
@@ -12,7 +14,6 @@ import { redirect } from "next/navigation";
 
 export default async function CatalogulMeuPage() {
   const session = (await getServerSession()) as CustomSession;
-
   if (!session) {
     redirect("/api/auth/signin"); // Redirect to sign-in page if not logged in
   }
@@ -20,10 +21,13 @@ export default async function CatalogulMeuPage() {
   const { result: user, error: userError } = await getUserByUsername(
     session.user.name
   );
+  console.log("user: ", user, userError);
   if (userError || !user) return;
 
   const { result: curriculum, error: curriculumError } =
     await getCurriculumById(user.profile.curriculumId);
+  console.log("catal: ", user, userError);
+
   if (curriculumError || !curriculum) return;
 
   return (
@@ -33,7 +37,18 @@ export default async function CatalogulMeuPage() {
         <UserMainInformation user={user} />
         <UserCurriculum curriculum={curriculum} />
       </div>
-      <div className={`px-[32px]`}><CurriculumDisplay curriculum={curriculum}/></div>
+      <div className={`px-[32px]`}>
+        <CurriculumDisplay curriculum={curriculum} />
+      </div>
+      <ClickTracker
+        actionType="create-subject"
+        itemIdentifiers={{
+          curriculumId: curriculum._id.toString(),
+          subjectId: null
+        }}
+      >
+        <div className="w-full h-[400px]"></div>
+      </ClickTracker>
     </div>
   );
 }
@@ -51,8 +66,8 @@ const UserIcon = ({ w }: { w: number }) => (
     <path
       d="M17.9691 20C17.81 17.1085 16.9247 15 11.9999 15C7.07521 15 6.18991 17.1085 6.03076 20"
       stroke="#1C274C"
-      stroke-width="1"
-      stroke-linecap="round"
+      strokeWidth="1"
+      strokeLinecap="round"
     />
   </svg>
 );

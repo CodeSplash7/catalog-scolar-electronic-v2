@@ -1,28 +1,20 @@
 "use server";
-import { CurriculumDocument, SubjectDocument } from "@/types/curriculum-types";
+import { CurriculumDocument, Subject } from "@/types/curriculum-types";
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 import clientPromise from "@/mongodb/index";
 import {
   SingleDocumentFetchPromise,
-  WithObjectId,
-  WithStringId
+  WithObjectId
 } from "@/types/fetching-types";
-import { stringifyId } from "@/general-utils/stringify-ids";
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
 import { UserClass } from "@/types/user-types";
 import { getSubjectNamesByClass } from "@/general-utils/getSubjectNamesByClass";
 
 // Document with different ids type
 type CurriculumDocumentWithObjectId = WithObjectId<CurriculumDocument>;
-type CurriculumDocumentWithStringId = WithStringId<CurriculumDocument>;
 
-type SingleCurriculumFetchPromise<
-  T extends CurriculumDocumentWithObjectId | CurriculumDocumentWithStringId
-> = SingleDocumentFetchPromise<T>;
-
-// Readablity alias types
-export type SingleCurriculumFetchPromiseWithStringId =
-  SingleCurriculumFetchPromise<CurriculumDocumentWithStringId>;
+type SingleCurriculumFetchPromiseWithObjectId =
+  SingleDocumentFetchPromise<CurriculumDocumentWithObjectId>;
 
 let client: MongoClient, db: Db, curriculums: Collection<CurriculumDocument>;
 
@@ -40,18 +32,17 @@ async function init() {
 
 export const getCurriculumById = async (
   id: string | undefined | null
-): SingleCurriculumFetchPromiseWithStringId => {
+): SingleCurriculumFetchPromiseWithObjectId => {
   try {
     if (!curriculums) await init();
     if (!id) throw "Didn't provide a valid id";
 
     const response = (await curriculums.findOne({
       _id: new ObjectId(id)
-    })) as CurriculumDocumentWithObjectId;
+    })) as CurriculumDocumentWithObjectId | null;
     if (response === null) throw "Didn't find a curriculum with the given id";
 
-    const result = stringifyId(response);
-    return { result, error: null };
+    return { result: response, error: null };
   } catch (err) {
     return handleBasicFetchError(err);
   }
@@ -59,37 +50,39 @@ export const getCurriculumById = async (
 
 export const createNewCurriculum = async (
   userClass: UserClass
-): SingleCurriculumFetchPromiseWithStringId => {
+): SingleCurriculumFetchPromiseWithObjectId => {
   try {
     if (!curriculums) await init();
 
     const curriculumSubjectNames: string[] = getSubjectNamesByClass(userClass);
 
-    const subjects: WithStringId<SubjectDocument>[] =
-      curriculumSubjectNames.map((n) => {
-        return {
-          _id: new ObjectId().toString(),
-          subjectName: n,
-          grades: [],
-          absences: [],
-          activity: { good: 0, bad: 0 },
-          conduit: 10
-        };
-      });
+    // const subjects: Subject[] = curriculumSubjectNames.map((n) => {
+    //   return {
+    //     id: await newObjectId(),
+    //     subjectName: n,
+    //     grades: [],
+    //     absences: [],
+    //     activity: { good: 0, bad: 0 },
+    //     conduit: 10
+    //   };
+    // });
+
+    //! need to use 'subjects' variable in the curriculum object
 
     const newCurriculumDocument: CurriculumDocument = {
       absences: {
         total: 0,
         excused: 0
       },
-      subjects
+      subjects: [],
+      overallAverage: 0
     };
 
     const result = await curriculums.insertOne(newCurriculumDocument);
     const newUser = {
       ...newCurriculumDocument,
-      _id: result.insertedId.toString()
-    } as CurriculumDocumentWithStringId;
+      _id: result.insertedId
+    } as CurriculumDocumentWithObjectId;
 
     if (!result.acknowledged) throw "Failed to create new user";
     return { error: null, result: newUser };
@@ -101,7 +94,7 @@ export const createNewCurriculum = async (
 export const updateCurriculum = async (
   id: string,
   updates: Partial<CurriculumDocument>
-): SingleCurriculumFetchPromiseWithStringId => {
+): SingleCurriculumFetchPromiseWithObjectId => {
   try {
     if (!curriculums) await init();
     await curriculums.updateOne({ _id: new ObjectId(id) }, { $set: updates });
@@ -109,10 +102,12 @@ export const updateCurriculum = async (
     // Fetch the updated user document
     const updatedCurriculum = (await curriculums.findOne({
       _id: new ObjectId(id)
-    })) as CurriculumDocumentWithObjectId;
+    })) as CurriculumDocumentWithObjectId | null;
+
+    if (!updatedCurriculum) throw "Failed finding the updated curriculum";
 
     return {
-      result: { ...updatedCurriculum, _id: updatedCurriculum._id.toString() },
+      result: updatedCurriculum,
       error: null
     };
   } catch (err) {

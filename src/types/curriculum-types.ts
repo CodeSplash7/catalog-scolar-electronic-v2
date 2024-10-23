@@ -1,6 +1,7 @@
+import { WithObjectId } from "@/types/fetching-types";
 export interface CurriculumDocument {
   absences: CurriculumAbsences;
-  subjects: SubjectDocument[];
+  subjects: Subject[];
   overallAverage: number;
 }
 
@@ -9,20 +10,23 @@ export interface CurriculumAbsences {
   excused: number;
 }
 
-export interface SubjectDocument {
+export interface Subject {
+  id: { $oid: string };
   subjectName: string;
-  grades: GradeDocument[];
-  absences: AbsenceDocument[];
+  grades: Grade[];
+  absences: Absence[];
   activity: Activity;
   conduit: number;
 }
 
-export interface GradeDocument {
+export interface Grade {
+  id: { $oid: string };
   score: number;
   date: string; // ISO date string
 }
 
-export interface AbsenceDocument {
+export interface Absence {
+  id: { $oid: string };
   date: string; // ISO date string
   excused: boolean;
 }

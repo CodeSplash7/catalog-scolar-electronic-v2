@@ -25,7 +25,7 @@ export default function NavLinks({ closeModal }: { closeModal: () => void }) {
         {links.map((link, index) => (
           <Link
             key={index}
-            href={"." + link.href}
+            href={link.href}
             onClick={() => {
               setNewPath(link.href);
               closeModal();

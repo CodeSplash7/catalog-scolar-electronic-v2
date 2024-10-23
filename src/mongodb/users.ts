@@ -6,32 +6,20 @@ import { hashPassword } from "@/server-utils/password-functions";
 import {
   MultipleDocumentFetchPromise,
   SingleDocumentFetchPromise,
-  WithObjectId,
-  WithStringId
+  WithObjectId
 } from "@/types/fetching-types";
-import { stringifyId, stringifyIds } from "@/general-utils/stringify-ids";
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
 import removeDuplicateSpaces from "@/general-utils/removeDuplicateSpaces";
 import { generateUsername } from "@/general-utils/generateUsername";
 
 // Document with different ids type
 type UserDocumentWithObjectId = WithObjectId<UserDocument>;
-type UserDocumentWithStringId = WithStringId<UserDocument>;
 
 // Fetch return types
-type MultipleUsersFetchPromise<
-  T extends UserDocumentWithObjectId | UserDocumentWithStringId
-> = MultipleDocumentFetchPromise<T>;
-type SingleUserFetchPromise<
-  T extends UserDocumentWithObjectId | UserDocumentWithStringId
-> = SingleDocumentFetchPromise<T>;
-
-// Readablity alias types
-type MultipleUsersFetchPromiseWithStringId =
-  MultipleUsersFetchPromise<UserDocumentWithStringId>;
-
-export type SingleUserFetchPromiseWithStringId =
-  SingleUserFetchPromise<UserDocumentWithStringId>;
+type MultipleUsersFetchPromiseWithObjectId =
+  MultipleDocumentFetchPromise<UserDocumentWithObjectId>;
+type SingleUserFetchPromiseWithObjectId =
+  SingleDocumentFetchPromise<UserDocumentWithObjectId>;
 
 let client: MongoClient, db: Db, users: Collection<UserDocument>;
 
@@ -49,15 +37,18 @@ async function init() {
 
 export const getUsers = async (
   projection?: Record<string, number>
-): MultipleUsersFetchPromiseWithStringId => {
+): MultipleUsersFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
 
-    const response = (await users
-      .find({}, { projection })
-      .toArray()) as UserDocumentWithObjectId[];
-
-    const result = stringifyIds(response);
+    const response = await users.find({}, { projection }).toArray();
+    const result = response.map((u) => {
+      const newUser = {
+        ...u,
+        _id: { $oid: u._id.toString() }
+      } as UserDocumentWithObjectId;
+      return newUser;
+    });
 
     return { result, error: null };
   } catch (err) {
@@ -67,20 +58,19 @@ export const getUsers = async (
 
 export const getUserByUsername = async (
   username: string | undefined | null
-): SingleUserFetchPromiseWithStringId => {
+): SingleUserFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
     if (!username) throw "Invalid username";
 
     const response = (await users.findOne({
       "profile.username": username
-    })) as UserDocumentWithObjectId;
+    })) as UserDocumentWithObjectId | null;
 
     if (response === null)
       throw "Didn't find a user with the given username: " + username;
 
-    const result = stringifyId(response);
-    return { result, error: null };
+    return { result: response, error: null };
   } catch (err) {
     return handleBasicFetchError(err);
   }
@@ -88,18 +78,17 @@ export const getUserByUsername = async (
 
 export const getUserByEmail = async (
   email: string | undefined | null
-): SingleUserFetchPromiseWithStringId => {
+): SingleUserFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
     if (!email) throw "Didn't provide a valid email";
 
     const response = (await users.findOne({
       "account.email": email
-    })) as UserDocumentWithObjectId;
+    })) as UserDocumentWithObjectId | null;
     if (response === null) throw "Didn't find a user with the given email";
 
-    const result = stringifyId(response);
-    return { result, error: null };
+    return { result: response, error: null };
   } catch (err) {
     return handleBasicFetchError(err);
   }
@@ -107,18 +96,18 @@ export const getUserByEmail = async (
 
 export const getUserById = async (
   id: string | undefined | null
-): SingleUserFetchPromiseWithStringId => {
+): SingleUserFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
     if (!id) throw "Didn't provide a valid id";
 
     const response = (await users.findOne({
       _id: new ObjectId(id)
-    })) as UserDocumentWithObjectId;
+    })) as UserDocumentWithObjectId | null;
     if (response === null) throw "Didn't find a user with the given id";
 
-    const result = stringifyId(response);
-    return { result, error: null };
+    // const result = stringifyId(response);
+    return { result: response, error: null };
   } catch (err) {
     return handleBasicFetchError(err);
   }
@@ -132,7 +121,7 @@ export const createNewUser = async (newUserInfo: {
   firstName: string;
   lastName: string;
   fathersInitial: string;
-}): SingleUserFetchPromiseWithStringId => {
+}): SingleUserFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
     const {
@@ -172,8 +161,8 @@ export const createNewUser = async (newUserInfo: {
     const result = await users.insertOne(newUserDocument);
     const newUser = {
       ...newUserDocument,
-      _id: result.insertedId.toString()
-    } as UserDocumentWithStringId;
+      _id: { $oid: result.insertedId.toString() }
+    } as UserDocumentWithObjectId | null;
 
     if (!result.acknowledged) throw "Failed to create new user";
     return { error: null, result: newUser };
@@ -185,7 +174,7 @@ export const createNewUser = async (newUserInfo: {
 export const updateUser = async (
   id: string,
   updates: Partial<UserDocument>
-): SingleUserFetchPromiseWithStringId => {
+): SingleUserFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
     await users.updateOne({ _id: new ObjectId(id) }, { $set: updates });
@@ -193,10 +182,12 @@ export const updateUser = async (
     // Fetch the updated user document
     const updatedUser = (await users.findOne({
       _id: new ObjectId(id)
-    })) as UserDocumentWithObjectId;
+    })) as UserDocumentWithObjectId | null;
+
+    if (!updatedUser) throw "Couldn't find the updated blog!";
 
     return {
-      result: { ...updatedUser, _id: updatedUser._id.toString() },
+      result: { ...updatedUser, _id: { $oid: updatedUser._id.toString() } },
       error: null
     };
   } catch (err) {

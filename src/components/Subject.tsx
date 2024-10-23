@@ -2,12 +2,14 @@ import {
   magra_700,
   open_sans_400,
   open_sans_600,
-  open_sans_700,
   open_sans_800
 } from "@/fonts";
 import getAverage from "@/general-utils/getAverage";
-import { SubjectDocument } from "@/types/curriculum-types";
+import { CurriculumDocument, Subject } from "@/types/curriculum-types";
 import Image from "next/image";
+import ClickTracker from "./ClickTracker";
+import { WithId } from "mongodb";
+import { WithObjectId } from "@/types/fetching-types";
 
 // Function to format date to dd-mm
 function formatDate(date: Date): string {
@@ -16,114 +18,128 @@ function formatDate(date: Date): string {
   return `${day}-${month}`; // Return formatted date
 }
 
-export default async function Subject({
-  subject
+export default async function SubjectDisplay({
+  subject,
+  curriculum
 }: {
-  subject: SubjectDocument;
+  curriculum: WithObjectId<CurriculumDocument>;
+  subject: Subject;
 }) {
   return (
-    <div
-      className={`w-full h-fit grid grid-cols-[19fr_42.5fr_38.5fr] grid-rows-[58px_38px_320px_48px_45px_38px_42px]`}
+    <ClickTracker
+      actionType="edit-subject"
+      itemIdentifiers={{
+        curriculumId: curriculum._id.toString(),
+        subjectId: subject.id.$oid
+      }}
     >
-      <div className="bg-[#017eba] col-span-3 row-span-1 flex justify-between p-[15px] border border-gray-300">
+      <div
+        className={`w-full h-fit grid grid-cols-[19fr_42.5fr_38.5fr] grid-rows-[58px_38px_320px_48px_45px_38px_42px] shadow-2xl`}
+      >
+        <div className="bg-[#017eba] col-span-3 row-span-1 flex justify-between p-[15px] border border-gray-300">
+          <div
+            className={`flex items-start text-[16px] ${magra_700.className} text-white`}
+          >
+            {subject.subjectName}
+          </div>
+          <Image
+            className={`w-[40px] h-[24px]`}
+            alt={"sanse medii de ascultare"}
+            width={600}
+            height={600}
+            src="/volan-galben.png"
+          />
+        </div>
+        <div className="text-[13px] text-[#cccccc] col-span-1 row-span-2 flex flex-col items-center justify-center border border-gray-300">
+          <div className="writing-vertical">
+            2<br />
+            0<br />
+            2<br />4
+          </div>
+          <div className="writing-vertical mt-2">-</div>
+          <div className="writing-vertical mt-2">
+            2<br />
+            0<br />
+            2<br />5
+          </div>
+        </div>
         <div
-          className={`flex items-start text-[16px] ${magra_700.className} text-white`}
+          className={`col-span-1 row-span-1 ${open_sans_800.className} font-black text-[#454545] p-[15px] text-[15px] flex items-center justify-start border border-gray-300`}
         >
-          {subject.subjectName}
+          Absențe
         </div>
-        <Image
-          className={`w-[40px] h-[24px]`}
-          alt={"sanse medii de ascultare"}
-          width={600}
-          height={600}
-          src="/volan-galben.png"
-        />
-      </div>
-      <div className="text-[13px] text-[#cccccc] col-span-1 row-span-2 flex flex-col items-center justify-center border border-gray-300">
-        <div className="writing-vertical">
-          2<br />
-          0<br />
-          2<br />4
+        <div
+          className={`col-span-1 row-span-1 ${open_sans_800.className} font-black text-[#454545] p-[15px] text-[15px] flex items-center justify-start border border-gray-300`}
+        >
+          Note
         </div>
-        <div className="writing-vertical mt-2">-</div>
-        <div className="writing-vertical mt-2">
-          2<br />
-          0<br />
-          2<br />5
+        <div className="col-span-1 row-span-1 border border-gray-300 px-[14px] py-[7px]">
+          <div className="flex flex-wrap gap-[8px]">
+            {subject.absences.map((a) => (
+              <div
+                className={`text-[12px] h-[10px] text-[#454545] font-bold ${open_sans_600.className}`}
+              >
+                {formatDate(new Date(a.date))}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-      <div
-        className={`col-span-1 row-span-1 ${open_sans_800.className} font-black text-[#454545] p-[15px] text-[15px] flex items-center justify-start border border-gray-300`}
-      >
-        Absențe
-      </div>
-      <div
-        className={`col-span-1 row-span-1 ${open_sans_800.className} font-black text-[#454545] p-[15px] text-[15px] flex items-center justify-start border border-gray-300`}
-      >
-        Note
-      </div>
-      <div className="col-span-1 row-span-1 border border-gray-300 px-[14px] py-[7px]">
-        <div className="flex flex-wrap gap-[8px]">
-          {subject.absences.map((a) => (
-            <div
-              className={`text-[12px] h-[10px] text-[#454545] font-bold ${open_sans_600.className}`}
-            >
-              {formatDate(new Date(a.date))}
+        <div className="col-span-1 row-span-1 flex flex-col p-[7px_15px_15px_8px] border border-gray-300">
+          {subject.grades.map((g) => (
+            <div className="flex text-[#454545] items-center ">
+              <div
+                className={`text-[18px] font-bold ${open_sans_800.className}`}
+              >
+                {g.score}/
+              </div>
+              <div
+                className={`text-[13px] font-bold ${open_sans_400.className}`}
+              >
+                {formatDate(new Date(g.date))}
+              </div>
             </div>
           ))}
         </div>
-      </div>
-      <div className="col-span-1 row-span-1  border border-gray-300">
-        {subject.grades.map((g) => (
-          <div className="flex text-[#454545] items-center p-[7px_15px_15px_2px]">
-            <div className={`text-[18px] font-bold ${open_sans_800.className}`}>
-              {g.score}/
-            </div>
-            <div className={`text-[13px] font-bold ${open_sans_400.className}`}>
-              {formatDate(new Date(g.date))}
-            </div>
+        <div
+          className={`col-span-3 row-span-1 p-[10px] text-start ${magra_700.className} text-[#AC2400] border border-gray-300`}
+        >
+          Media: {getAverage(subject.grades.map((g) => g.score))}
+        </div>
+        <div
+          className={`col-span-3 row-span-1 p-[10px] text-start ${magra_700.className} text-[#AC2400] border border-gray-300`}
+        >
+          Media anuala: {getAverage(subject.grades.map((g) => g.score))}
+        </div>
+        <div
+          className={`col-span-2 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
+        >
+          Activitate
+        </div>
+        <div
+          className={`col-span-1 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
+        >
+          Conduită
+        </div>
+        <div
+          className={`col-span-2 row-span-1 p-[10px] flex items-center justify-start gap-[32px] text-start ${magra_700.className} text-[#017EBA] text-[15px] border border-gray-300`}
+        >
+          <div className="flex gap-[4px] items-center">
+            <ThumbsUp w={18} />
+            {subject.activity.good}
           </div>
-        ))}
-      </div>
-      <div
-        className={`col-span-3 row-span-1 p-[10px] text-start ${magra_700.className} text-[#AC2400] border border-gray-300`}
-      >
-        Media: {getAverage(subject.grades.map((g) => g.score))}
-      </div>
-      <div
-        className={`col-span-3 row-span-1 p-[10px] text-start ${magra_700.className} text-[#AC2400] border border-gray-300`}
-      >
-        Media anuala: {getAverage(subject.grades.map((g) => g.score))}
-      </div>
-      <div
-        className={`col-span-2 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
-      >
-        Activitate
-      </div>
-      <div
-        className={`col-span-1 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
-      >
-        Conduită
-      </div>
-      <div
-        className={`col-span-2 row-span-1 p-[10px] flex items-center justify-start gap-[32px] text-start ${magra_700.className} text-[#017EBA] text-[15px] border border-gray-300`}
-      >
-        <div className="flex gap-[4px] items-center">
-          <ThumbsUp w={18} />
-          {subject.activity.good}
+          <div className="flex gap-[4px] items-end">
+            <ThumbsDown w={18} />
+            {subject.activity.bad}
+          </div>
         </div>
-        <div className="flex gap-[4px] items-end">
-          <ThumbsDown w={18} />
-          {subject.activity.bad}
-        </div>
-      </div>
 
-      <div
-        className={`col-span-1 row-span-1 flex justify-center items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
-      >
-        {subject.conduit === 10 ? "-" : subject.conduit}
+        <div
+          className={`col-span-1 row-span-1 flex justify-center items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
+        >
+          {subject.conduit === 10 ? "-" : subject.conduit}
+        </div>
       </div>
-    </div>
+    </ClickTracker>
   );
 }
 
