@@ -1,9 +1,7 @@
 import EditSubjectForm from "@/components/EditSubjectForm";
 import {
   getSubjectById,
-  updateSubject
 } from "@/server-utils/curriculum-functions";
-import { Subject } from "@/types/curriculum-types";
 
 type Params = {
   curriculumId: string;

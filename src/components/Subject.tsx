@@ -8,7 +8,6 @@ import getAverage from "@/general-utils/getAverage";
 import { CurriculumDocument, Subject } from "@/types/curriculum-types";
 import Image from "next/image";
 import ClickTracker from "./ClickTracker";
-import { WithId } from "mongodb";
 import { WithObjectId } from "@/types/fetching-types";
 
 // Function to format date to dd-mm
@@ -77,6 +76,7 @@ export default async function SubjectDisplay({
           <div className="flex flex-wrap gap-[8px]">
             {subject.absences.map((a) => (
               <div
+                key={a.id.$oid}
                 className={`text-[12px] h-[10px] text-[#454545] font-bold ${open_sans_600.className}`}
               >
                 {formatDate(new Date(a.date))}
@@ -86,7 +86,7 @@ export default async function SubjectDisplay({
         </div>
         <div className="col-span-1 row-span-1 flex flex-col p-[7px_15px_15px_8px] border border-gray-300">
           {subject.grades.map((g) => (
-            <div className="flex text-[#454545] items-center ">
+            <div key={g.id.$oid} className="flex text-[#454545] items-center ">
               <div
                 className={`text-[18px] font-bold ${open_sans_800.className}`}
               >

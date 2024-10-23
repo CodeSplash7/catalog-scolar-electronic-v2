@@ -12,7 +12,6 @@ const client = new MongoClient(URI, {
   }
 });
 
-let clientPromise: Promise<MongoClient>;
+const clientPromise: Promise<MongoClient> = client.connect();
 
-clientPromise = client.connect(); // Store the connection
 export default clientPromise;

@@ -24,7 +24,7 @@ const EditSubjectForm: React.FC<{
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (newSubject: Subject) => {
-    const { result, error } = await updateSubject(
+    await updateSubject(
       curriculumId,
       subject.id.$oid,
       newSubject
@@ -43,7 +43,7 @@ const EditSubjectForm: React.FC<{
     if (errors) setError(errors[0]);
 
     return !!errors;
-  }, [subjectName, absences, grades, activity, conduit, error]);
+  }, [subjectName, absences, grades, activity, conduit]);
   const submitForm = async () => {
     if (validateForm) return;
     handleSubmit({

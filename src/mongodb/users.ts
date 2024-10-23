@@ -1,6 +1,6 @@
 "use server";
 import { UserClass, UserDocument } from "@/types/user-types";
-import { Collection, Db, MongoClient, ObjectId, WithId } from "mongodb";
+import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 import clientPromise from "@/mongodb/index";
 import { hashPassword } from "@/server-utils/password-functions";
 import {
@@ -45,7 +45,7 @@ export const getUsers = async (
     const result = response.map((u) => {
       const newUser = {
         ...u,
-        _id: { $oid: u._id.toString() }
+        _id: new ObjectId()
       } as UserDocumentWithObjectId;
       return newUser;
     });
@@ -161,7 +161,7 @@ export const createNewUser = async (newUserInfo: {
     const result = await users.insertOne(newUserDocument);
     const newUser = {
       ...newUserDocument,
-      _id: { $oid: result.insertedId.toString() }
+      _id: new ObjectId()
     } as UserDocumentWithObjectId | null;
 
     if (!result.acknowledged) throw "Failed to create new user";
@@ -187,7 +187,7 @@ export const updateUser = async (
     if (!updatedUser) throw "Couldn't find the updated blog!";
 
     return {
-      result: { ...updatedUser, _id: { $oid: updatedUser._id.toString() } },
+      result: { ...updatedUser, _id: new ObjectId() },
       error: null
     };
   } catch (err) {

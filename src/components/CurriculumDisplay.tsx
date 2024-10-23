@@ -10,7 +10,7 @@ export default async function CurriculumDisplay({
   return (
     <div className={`flex flex-col w-full gap-[16px] `}>
       {curriculum.subjects.map((s) => (
-        <SubjectDisplay curriculum={curriculum} subject={s} />
+        <SubjectDisplay key={s.id.$oid} curriculum={curriculum} subject={s} />
       ))}
     </div>
   );

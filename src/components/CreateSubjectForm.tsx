@@ -37,7 +37,7 @@ const CreateSubjectForm: React.FC<{
     if (errors) setError(errors[0]);
 
     return !!errors;
-  }, [subjectName, absences, grades, activity, conduit, error]);
+  }, [subjectName, absences, grades, activity, conduit]);
   const submitForm = async () => {
     if (validateForm) return;
     handleSubmit({

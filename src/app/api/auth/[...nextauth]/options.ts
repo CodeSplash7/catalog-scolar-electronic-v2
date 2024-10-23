@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client from "@/mongodb/index";
 import { JWT } from "next-auth/jwt";
-import { getUserById, getUserByUsername } from "@/mongodb/users";
+import { getUserByUsername } from "@/mongodb/users";
 import { verifyPassword } from "@/server-utils/password-functions";
 
 // Extend the Session type to include the id property
@@ -44,7 +44,7 @@ const options: AuthOptions = {
           placeholder: "Type password..."
         }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         const { result: appUser, error } = await getUserByUsername(
           credentials?.username
         );
@@ -67,7 +67,7 @@ const options: AuthOptions = {
     strategy: "jwt"
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token }) {
       const { result: appUser } = await getUserByUsername(
         (token as CustomToken).name
       );
@@ -84,7 +84,7 @@ const options: AuthOptions = {
 
       return customSession;
     },
-    async signIn({ user, account, profile, email, credentials }) {
+    async signIn() {
       return true;
       // const { result: users } = await getUsers();
       // const appUser = users?.find(
@@ -93,7 +93,7 @@ const options: AuthOptions = {
       // );
       // return appUser ? true : false;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ baseUrl }) {
       return baseUrl;
     }
   }

@@ -2,13 +2,15 @@
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
 import { getCurriculumById, updateCurriculum } from "@/mongodb/curriculums";
 import { Subject } from "@/types/curriculum-types";
-import { SingleDocumentFetchPromise } from "@/types/fetching-types";
 import { ObjectId } from "mongodb";
 
 export const getSubjectById = async (
   curriculumId: string | null,
   subjectId: string | null
-): SingleDocumentFetchPromise<Subject> => {
+): Promise<{
+  result: Subject | null;
+  error: string | null;
+}> => {
   try {
     if (!curriculumId) throw "Parameter 'curriculumId' is null!";
     if (!subjectId) throw "Parameter 'subjectId' is null!";
@@ -38,7 +40,10 @@ export const updateSubject = async (
   curriculumId: string,
   subjectId: string | null,
   newSubject: Subject
-): SingleDocumentFetchPromise<Subject> => {
+): Promise<{
+  result: Subject | null;
+  error: string | null;
+}> => {
   try {
     if (!curriculumId) throw "Parameter 'curriculumId' is null!";
     if (!subjectId) throw "Parameter 'subjectId' is null!";
@@ -82,7 +87,10 @@ export const updateSubject = async (
 export const deleteSubject = async (
   curriculumId: string,
   subjectId: string | null
-): SingleDocumentFetchPromise<null> => {
+): Promise<{
+  result: null;
+  error: string | null;
+}> => {
   try {
     if (!curriculumId) throw "Parameter 'curriculumId' is null!";
     if (!subjectId) throw "Parameter 'subjectId' is null!";
@@ -121,7 +129,10 @@ export const deleteSubject = async (
 export const createSubject = async (
   curriculumId: string | null,
   newSubject: Subject | null
-): SingleDocumentFetchPromise<null> => {
+): Promise<{
+  result: null;
+  error: string | null;
+}> => {
   try {
     if (!curriculumId) throw "Parameter 'curriculumId' is null!";
     if (!newSubject) throw "Parameter 'newSubject' is null!";

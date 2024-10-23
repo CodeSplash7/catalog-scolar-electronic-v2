@@ -1,4 +1,3 @@
-import { WithObjectId } from "@/types/fetching-types";
 export interface CurriculumDocument {
   absences: CurriculumAbsences;
   subjects: Subject[];

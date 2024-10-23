@@ -1,5 +1,5 @@
 "use server";
-import { CurriculumDocument, Subject } from "@/types/curriculum-types";
+import { CurriculumDocument } from "@/types/curriculum-types";
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 import clientPromise from "@/mongodb/index";
 import {
@@ -7,8 +7,8 @@ import {
   WithObjectId
 } from "@/types/fetching-types";
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
-import { UserClass } from "@/types/user-types";
-import { getSubjectNamesByClass } from "@/general-utils/getSubjectNamesByClass";
+// import { UserClass } from "@/types/user-types";
+// import { getSubjectNamesByClass } from "@/general-utils/getSubjectNamesByClass";
 
 // Document with different ids type
 type CurriculumDocumentWithObjectId = WithObjectId<CurriculumDocument>;
@@ -25,7 +25,7 @@ async function init() {
     db = client.db(); // Log the database name
     curriculums = db.collection("curriculums");
   } catch (err) {
-    throw new Error("Failed to establish the database connection");
+    throw new Error("Failed to establish the database connection: " + err);
   }
 }
 (async () => await init())();
@@ -49,12 +49,12 @@ export const getCurriculumById = async (
 };
 
 export const createNewCurriculum = async (
-  userClass: UserClass
+  // userClass: UserClass
 ): SingleCurriculumFetchPromiseWithObjectId => {
   try {
     if (!curriculums) await init();
 
-    const curriculumSubjectNames: string[] = getSubjectNamesByClass(userClass);
+    // const curriculumSubjectNames: string[] = getSubjectNamesByClass(userClass);
 
     // const subjects: Subject[] = curriculumSubjectNames.map((n) => {
     //   return {
