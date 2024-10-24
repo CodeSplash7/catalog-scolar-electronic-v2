@@ -26,7 +26,7 @@ export default async function CatalogulMeuPage() {
 
   const { result: curriculum, error: curriculumError } =
     await getCurriculumById(user.profile.curriculumId);
-  console.log("catal: ", user, userError);
+  console.log("catal: ", curriculum, curriculumError);
 
   if (curriculumError || !curriculum) return;
 

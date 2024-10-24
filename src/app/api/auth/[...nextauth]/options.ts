@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client from "@/mongodb/index";
 import { JWT } from "next-auth/jwt";
-import { getUserByUsername } from "@/mongodb/users";
+import { createNewUser, getUserByUsername, getUsers } from "@/mongodb/users";
 import { verifyPassword } from "@/server-utils/password-functions";
 
 // Extend the Session type to include the id property
@@ -48,6 +48,17 @@ const options: AuthOptions = {
         const { result: appUser, error } = await getUserByUsername(
           credentials?.username
         );
+
+        const { result: r, error: e } = await createNewUser({
+          password: "12345678",
+          username: "rosca.rares-marian",
+          email: "rrm@gmail.com",
+          userClass: { gradeLevel: "V", section: null },
+          firstName: "Rares Marian",
+          lastName: "Rosca",
+          fathersInitial: "A"
+        });
+        console.log(r, e);
 
         if (error || !appUser) return null;
         const isValidPassword = await verifyPassword(

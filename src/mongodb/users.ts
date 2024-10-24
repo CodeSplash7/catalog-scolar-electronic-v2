@@ -27,7 +27,7 @@ async function init() {
   if (db) return;
   try {
     client = await clientPromise;
-    db = client.db(); // Log the database name
+    db = client.db("catalog-scolar-electronic"); // Log the database name
     users = db.collection("users");
   } catch (err) {
     throw new Error("Failed to establish the database connection: " + err);
