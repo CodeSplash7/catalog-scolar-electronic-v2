@@ -4,7 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client from "@/mongodb/index";
 import { JWT } from "next-auth/jwt";
-import { createNewUser, getUserByUsername, getUsers } from "@/mongodb/users";
+import { createNewUser, getUserByUsername } from "@/mongodb/users";
 import { verifyPassword } from "@/server-utils/password-functions";
 
 // Extend the Session type to include the id property
