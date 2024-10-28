@@ -1,9 +1,7 @@
-import Head from "next/head";
-
 import Navbar from "@/components/Navbar";
 import NextAuthSessionProvider from "@/lib/nextauth/next-auth-session";
 import "@/styles/styles.css";
-import { Metadata } from "next";
+import Head from "next/head";
 
 export const metadata = {
   title: "Catalog Scolar Electronic",
@@ -13,7 +11,11 @@ export const metadata = {
   icons: [
     { rel: "icon", sizes: "192x192", href: "/icons/icon-192x192.png" },
     { rel: "icon", sizes: "512x512", href: "/icons/icon-512x512.png" },
-    { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" }
+    {
+      rel: "apple-touch-icon",
+      sizes: "180x180",
+      href: "/icons/apple-touch-icon.png"
+    }
   ],
   manifest: "/manifest.json"
 };
@@ -26,9 +28,9 @@ export default function RootLayout({
   return (
     <NextAuthSessionProvider>
       <html lang="en">
-        <head>
+        <Head>
           <link rel="manifest" href="/manifest.json" />
-        </head>
+        </Head>
         <body>
           <Navbar />
           {children}
