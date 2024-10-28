@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment } from "react";
 import NavLinks from "./NavLinks";
 
 export default function NavLinksModal({

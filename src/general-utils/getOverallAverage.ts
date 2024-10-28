@@ -1,7 +1,7 @@
 import { CurriculumDocument } from "@/types/curriculum-types";
 import getAverage from "./getAverage";
 export default function getOverallAverage(curriculum: CurriculumDocument) {
-  let averageList: number[] = [];
+  const averageList: number[] = [];
   for (let i = 0; i < curriculum.subjects.length; i++) {
     const average = getAverage(
       curriculum.subjects[i].grades.map((g) => g.score)
