@@ -5,8 +5,17 @@ import NextAuthSessionProvider from "@/lib/nextauth/next-auth-session";
 import "@/styles/styles.css";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Catalog Scolar Electronic"
+export const metadata = {
+  title: "Catalog Scolar Electronic",
+  description:
+    "Catalogul scolar al elevului, care il ajuta pentru vizualizarea rapida a notelor, absentelor si purtarii.",
+  themeColor: "#000000",
+  icons: [
+    { rel: "icon", sizes: "192x192", href: "/icons/icon-192x192.png" },
+    { rel: "icon", sizes: "512x512", href: "/icons/icon-512x512.png" },
+    { rel: "apple-touch-icon", sizes: "180x180", href: "/icons/apple-touch-icon.png" }
+  ],
+  manifest: "/manifest.json"
 };
 
 export default function RootLayout({
@@ -17,14 +26,9 @@ export default function RootLayout({
   return (
     <NextAuthSessionProvider>
       <html lang="en">
-        <Head>
-          <link
-            rel="icon"
-            href="/icon?<generated>"
-            type="image/<generated>"
-            sizes="<generated>"
-          />
-        </Head>
+        <head>
+          <link rel="manifest" href="/manifest.json" />
+        </head>
         <body>
           <Navbar />
           {children}
