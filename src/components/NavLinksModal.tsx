@@ -1,6 +1,6 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import NavLinks from "./NavLinks";
 
 export default function NavLinksModal({
@@ -14,6 +14,7 @@ export default function NavLinksModal({
     <>
       <Transition appear show={isOpen} as={Fragment}>
         <div
+          onTouchStart={closeModal}
           onClick={closeModal}
           className="absolute w-[35%] h-screen top-0 left-0 z-[99999999999]"
         ></div>
