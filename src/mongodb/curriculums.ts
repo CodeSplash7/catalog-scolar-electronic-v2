@@ -48,9 +48,8 @@ export const getCurriculumById = async (
   }
 };
 
-export const createNewCurriculum = async (
-  // userClass: UserClass
-): SingleCurriculumFetchPromiseWithObjectId => {
+export const createNewCurriculum = async (): // userClass: UserClass
+SingleCurriculumFetchPromiseWithObjectId => {
   try {
     if (!curriculums) await init();
 
@@ -70,10 +69,6 @@ export const createNewCurriculum = async (
     //! need to use 'subjects' variable in the curriculum object
 
     const newCurriculumDocument: CurriculumDocument = {
-      absences: {
-        total: 0,
-        excused: 0
-      },
       subjects: [],
       overallAverage: 0
     };

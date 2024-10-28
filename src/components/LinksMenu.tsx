@@ -5,24 +5,35 @@ import NavLinksModal from "./NavLinksModal";
 
 export default function LinksMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const closeModal = () => setIsOpen(false);
+  const openModal = () => setIsOpen(true);
   return (
     <div className="">
-      <MenuButton isOpen={isOpen} onClick={() => setIsOpen(true)} />
-      <NavLinksModal isOpen={isOpen} closeModal={() => setIsOpen(false)} />
+      <MenuButton
+        isOpen={isOpen}
+        closeModal={closeModal}
+        openModal={openModal}
+      />
+      <NavLinksModal isOpen={isOpen} closeModal={closeModal} />
     </div>
   );
 }
 
 const MenuButton = ({
-  onClick,
+  closeModal,
+  openModal,
   isOpen
 }: {
-  onClick: () => void;
+  closeModal: () => void;
+  openModal: () => void;
   isOpen: boolean;
 }) => (
   <label
-    className={`scale-150 top-[4px] right-[20px] absolute z-[99999999]`}
-    onClick={onClick}
+    className={` scale-150 top-[4px] right-[20px] absolute z-[99999999]`}
+    onClick={() => {
+      if (isOpen) closeModal();
+      else openModal();
+    }}
   >
     <div
       className={`w-9 h-10 cursor-pointer flex flex-col items-end justify-center`}

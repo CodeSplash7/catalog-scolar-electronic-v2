@@ -5,6 +5,8 @@ import ClickTracker from "@/components/ClickTracker";
 
 import CurriculumDisplay from "@/components/CurriculumDisplay";
 import { magra_400, magra_700 } from "@/fonts";
+import getAllAbsences from "@/general-utils/getAllAbsences";
+import getOverallAverage from "@/general-utils/getOverallAverage";
 import { getCurriculumById } from "@/mongodb/curriculums";
 import { getUserByUsername } from "@/mongodb/users";
 import { CurriculumDocument } from "@/types/curriculum-types";
@@ -80,13 +82,16 @@ const UserMainInformation = ({ user }: { user: UserDocument }) => (
   }-a ${user.profile.userClass.section}`}</div>
 );
 
-const UserCurriculum = ({ curriculum }: { curriculum: CurriculumDocument }) => (
-  <div className={`flex flex-col w-full items-end gap-[4px]`}>
-    <div className={`${magra_700.className} text-[16px] text-[#AC2400]`}>
-      Media generală: {curriculum.overallAverage || "-"}
+const UserCurriculum = ({ curriculum }: { curriculum: CurriculumDocument }) => {
+  const [totalAbsences, excusedAbsences] = getAllAbsences(curriculum);
+  return (
+    <div className={`flex flex-col w-full items-end gap-[4px]`}>
+      <div className={`${magra_700.className} text-[16px] text-[#AC2400]`}>
+        Media generală: {getOverallAverage(curriculum) ?? "-"}
+      </div>
+      <div className={`${magra_700.className} text-[16px] text-[#017EBA]`}>
+        Absențe: {totalAbsences} / {excusedAbsences}
+      </div>
     </div>
-    <div className={`${magra_700.className} text-[16px] text-[#017EBA]`}>
-      Absențe: {curriculum.absences.total} / {curriculum.absences.excused}
-    </div>
-  </div>
-);
+  );
+};

@@ -1,12 +1,6 @@
 export interface CurriculumDocument {
-  absences: CurriculumAbsences;
   subjects: Subject[];
   overallAverage: number;
-}
-
-export interface CurriculumAbsences {
-  total: number;
-  excused: number;
 }
 
 export interface Subject {

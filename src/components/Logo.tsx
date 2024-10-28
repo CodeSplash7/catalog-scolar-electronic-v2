@@ -1,4 +1,5 @@
 import { public_sans, syncopate } from "@/fonts";
+import Link from "next/link";
 
 export default function Logo({
   w,
@@ -11,8 +12,9 @@ export default function Logo({
     <div
       className={`flex ${
         horizontal ? "flex-row gap-[4px] " : "flex-col"
-      } items-center justify-center w-fit`}
+      } items-center justify-center w-fit relative`}
     >
+      <Link href={"/"} className={"absolute  w-full h-full"}></Link>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="#1271a5"

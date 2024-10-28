@@ -33,16 +33,16 @@ export default async function SubjectDisplay({
       }}
     >
       <div
-        className={`w-full h-fit grid grid-cols-[19fr_42.5fr_38.5fr] grid-rows-[58px_38px_320px_48px_45px_38px_42px] shadow-2xl`}
+        className={`w-full h-fit grid grid-cols-[19fr_42.5fr_38.5fr] grid-rows-[58px_38px_320px_48px_45px_38px_42px] [box-shadow:0_4px_10px_rgba(0,0,0,0.5)]`}
       >
-        <div className="bg-[#017eba] col-span-3 row-span-1 flex justify-between p-[15px] border border-gray-300">
+        <div className="bg-[#017eba] col-span-3 row-span-1 flex flex-wrap justify-between p-[15px] border border-gray-300">
           <div
             className={`flex items-start text-[16px] ${magra_700.className} text-white`}
           >
             {subject.subjectName}
           </div>
           <Image
-            className={`w-[40px] h-[24px]`}
+            className={`w-[40px] h-[24px] [justify-self]`}
             alt={"sanse medii de ascultare"}
             width={600}
             height={600}
@@ -77,7 +77,9 @@ export default async function SubjectDisplay({
             {subject.absences.map((a) => (
               <div
                 key={a.id.$oid}
-                className={`text-[12px] h-[10px] text-[#454545] font-bold ${open_sans_600.className}`}
+                className={`p-[2px] text-[12px] h-fit text-[#454545] font-bold ${
+                  open_sans_600.className
+                } ${a.excused && "bg-[#fff2cb] line-through"}`}
               >
                 {formatDate(new Date(a.date))}
               </div>
@@ -103,12 +105,12 @@ export default async function SubjectDisplay({
         <div
           className={`col-span-3 row-span-1 p-[10px] text-start ${magra_700.className} text-[#AC2400] border border-gray-300`}
         >
-          Media: {getAverage(subject.grades.map((g) => g.score))}
+          Media: {getAverage(subject.grades.map((g) => g.score)) ?? "-"}
         </div>
         <div
           className={`col-span-3 row-span-1 p-[10px] text-start ${magra_700.className} text-[#AC2400] border border-gray-300`}
         >
-          Media anuala: {getAverage(subject.grades.map((g) => g.score))}
+          Media anuala: {getAverage(subject.grades.map((g) => g.score)) ?? "-"}
         </div>
         <div
           className={`col-span-2 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
