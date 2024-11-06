@@ -93,14 +93,14 @@ const UserMainInformation = ({ user }: { user: UserDocument }) => (
 );
 
 const UserCurriculum = ({ curriculum }: { curriculum: CurriculumDocument }) => {
-  const [totalAbsences, excusedAbsences] = getAllAbsences(curriculum);
+  const [totalAbsences, unexcusedAbsences] = getAllAbsences(curriculum);
   return (
     <div className={`flex flex-col w-full items-end gap-[4px]`}>
       <div className={`${magra_700.className} text-[16px] text-[#AC2400]`}>
         Media generală: {getOverallAverage(curriculum) ?? "-"}
       </div>
       <div className={`${magra_700.className} text-[16px] text-[#017EBA]`}>
-        Absențe: {totalAbsences} / {excusedAbsences}
+        Absențe: {totalAbsences} / {unexcusedAbsences}
       </div>
     </div>
   );
