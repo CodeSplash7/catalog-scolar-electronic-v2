@@ -1,7 +1,9 @@
 import { magra_700 } from "@/fonts";
 
+type Notice = { title: string; date: string; user: string; message: string };
+
 export default async function NoticeBoard() {
-  const notices = [
+  const notices: Notice[] = [
     {
       title: "An școlar 2024-2025",
       date: "10 Septembrie 2024",

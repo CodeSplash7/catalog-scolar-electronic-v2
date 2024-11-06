@@ -1,30 +1,30 @@
 "use client";
+// hooks
 import React, { ReactNode, cloneElement, useState } from "react";
 import { useRouter } from "next/navigation";
+import routes from "@/general-utils/page-routes";
 
-// Update the component to accept children and a function as props
-const ClickTracker = ({
-  children,
-  actionType,
-  itemIdentifiers
-}: {
+type ClickTrackerProps = {
   children: ReactNode;
   actionType: "edit-subject" | "create-subject";
   itemIdentifiers: { curriculumId: string; subjectId: string | null };
+};
+// Update the component to accept children and a function as props
+const ClickTracker: React.FC<ClickTrackerProps> = ({
+  children,
+  actionType,
+  itemIdentifiers
 }) => {
   const router = useRouter();
   const { curriculumId, subjectId } = itemIdentifiers;
   const [clickCount, setClickCount] = useState(0);
 
   let formLink;
-  if (actionType === "edit-subject" && subjectId) {
-    formLink = `/edit/${curriculumId}/${subjectId}`;
-    // console.log("shit");
-    // formLink = "./shits";
-  }
-  if (actionType === "create-subject" && !subjectId) {
-    formLink = `./create/${curriculumId}`;
-  }
+  if (actionType === "edit-subject" && subjectId)
+    formLink = routes.edit(curriculumId, subjectId);
+
+  if (actionType === "create-subject" && !subjectId)
+    formLink = routes.create(curriculumId);
 
   if (!formLink) return;
 
@@ -32,7 +32,6 @@ const ClickTracker = ({
     const newClickCount = clickCount + 1;
     setClickCount(newClickCount);
     if (newClickCount === 7) {
-      console.log("Navigating to:", formLink); // Log the formLink before navigation
       router.push(formLink);
       setClickCount(0);
     }

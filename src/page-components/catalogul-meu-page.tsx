@@ -1,36 +1,46 @@
 "use server";
 
-import { CustomSession } from "@/app/api/auth/[...nextauth]/options";
+// components
 import ClickTracker from "@/components/ClickTracker";
-
 import CurriculumDisplay from "@/components/CurriculumDisplay";
+
+// fonts
 import { magra_400, magra_700 } from "@/fonts";
+
+// authentication
+import { CustomSession } from "@/app/api/auth/[...nextauth]/options";
+import { getServerSession } from "next-auth";
+
+// general-utils
 import getAllAbsences from "@/general-utils/getAllAbsences";
 import getOverallAverage from "@/general-utils/getOverallAverage";
-import { getCurriculumById } from "@/mongodb/curriculums";
-import { getUserByUsername } from "@/mongodb/users";
+import routes from "@/general-utils/page-routes";
+
+// types
 import { CurriculumDocument } from "@/types/curriculum-types";
 import { UserDocument } from "@/types/user-types";
-import { getServerSession } from "next-auth";
+
+// database queries
+import { getCurriculumById } from "@/mongodb/curriculums";
+import { getUserByUsername } from "@/mongodb/users";
+
+// hooks
 import { redirect } from "next/navigation";
 
 export default async function CatalogulMeuPage() {
   const session = (await getServerSession()) as CustomSession;
   if (!session) {
-    redirect("/api/auth/signin"); // Redirect to sign-in page if not logged in
+    redirect(routes.signin());
   }
 
   const { result: user, error: userError } = await getUserByUsername(
     session.user.name
   );
-  console.log("user: ", user, userError);
-  if (userError || !user) return;
+  if (userError || !user) throw userError;
 
   const { result: curriculum, error: curriculumError } =
     await getCurriculumById(user.profile.curriculumId);
-  console.log("catal: ", curriculum, curriculumError);
-
-  if (curriculumError || !curriculum) return;
+  if (curriculumError || !curriculum) throw curriculumError;
 
   return (
     <div className="flex flex-col w-full h-fit px-[16px] gap-[36px]">

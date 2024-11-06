@@ -14,7 +14,9 @@ export default async function HomeDashboard() {
         width={500}
         height={300}
       />
+
       <MessagesBoard />
+
       <br />
       <br />
       <br />

@@ -35,9 +35,11 @@ export default async function SubjectDisplay({
       <div
         className={`w-full h-fit grid grid-cols-[19fr_42.5fr_38.5fr] grid-rows-[58px_38px_320px_48px_45px_38px_42px] [box-shadow:0_4px_10px_rgba(0,0,0,0.5)]`}
       >
-        <div className="bg-[#017eba] col-span-3 row-span-1 flex flex-wrap justify-between p-[15px] border border-gray-300">
+        <div className="bg-[#017eba] col-span-3 row-span-1 flex justify-between p-[15px] border border-gray-300">
           <div
-            className={`flex items-start text-[16px] ${magra_700.className} text-white`}
+            className={`flex items-start truncate ${
+              subject.subjectName.length > 30 ? "text-[14px]" : "text-[16px]"
+            } ${magra_700.className} text-white w-full`}
           >
             {subject.subjectName}
           </div>

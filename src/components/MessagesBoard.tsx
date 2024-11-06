@@ -10,10 +10,12 @@ export default async function MessagesBoard() {
       >
         VERIFICĂ MESAJE
       </div>
+      {/* Read Messages */}
       <div className={"flex flex-col w-full"}>
         <div
           className={`border flex items-center justify-between px-[16px] py-[8px]`}
         >
+          {/* Content */}
           <div className={`flex gap-[4px] items-center`}>
             <ReadMessagesIcon w={20} />
             <div className={`text-[15px] font-bold text-[#181921]`}>Citite</div>
@@ -25,10 +27,12 @@ export default async function MessagesBoard() {
           </div>
         </div>
       </div>
+      {/* UnRead Messages */}
       <div className={"flex flex-col w-full"}>
         <div
           className={`border flex items-center justify-between px-[16px] py-[8px]`}
         >
+          {/* Content */}
           <div className={`flex gap-[4px] items-center`}>
             <UnreadMessagesIcon w={20} />
             <div className={`text-[15px] font-bold text-[#181921]`}>
