@@ -4,7 +4,6 @@ import { magra_700 } from "../fonts"; // Import the font for the title
 import { Absence, Activity, Grade, Subject } from "@/types/curriculum-types";
 import { validateSubjectForm } from "@/general-utils/validateSubjecForm";
 import { updateSubject } from "@/server-utils/curriculum-functions";
-import newStringId from "@/server-utils/newStringId";
 import { useRouter } from "next/navigation";
 import GradesInput from "./GradesInput";
 import {

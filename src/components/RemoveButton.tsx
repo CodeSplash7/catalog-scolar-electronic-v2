@@ -1,11 +1,17 @@
-import { FC } from "react";
+import { Absence, Grade } from "@/types/curriculum-types";
 
-const RemoveButton: FC<{
-  list: any[];
-  setList: (list: any[]) => void;
-  item: any;
+type RemoveButtonProps<T extends Grade | Absence> = {
+  list: T[];
+  setList: (list: T[]) => void;
+  item: T;
   index: number;
-}> = ({ list, setList, index }) => (
+};
+
+const RemoveButton = <T extends Grade | Absence>({
+  list,
+  setList,
+  index
+}: RemoveButtonProps<T>) => (
   <button
     type="button"
     className="bg-red-500 w-full flex justify-center text-white rounded-lg px-4 py-2"

@@ -1,23 +1,22 @@
 "use client";
 
 import { magra_700 } from "@/fonts";
-import { Absence, Grade } from "@/types/curriculum-types";
 import { Dialog, Transition } from "@headlessui/react";
 import { forwardRef, Fragment, useRef, useState } from "react";
 
-interface ModalListInputProps<T> {
+interface ModalListInputProps {
   addItem: () => Promise<void>;
   label: string;
   triggerLabel: string;
   children: React.ReactNode;
 }
 
-export default function ModalListInput<T extends Grade | Absence>({
+export default function ModalListInput({
   addItem,
   label,
   triggerLabel,
   children
-}: ModalListInputProps<T>) {
+}: ModalListInputProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -147,6 +146,8 @@ const AddItemButton = forwardRef(
     );
   }
 );
+
+AddItemButton.displayName = "AddItemButton";
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
