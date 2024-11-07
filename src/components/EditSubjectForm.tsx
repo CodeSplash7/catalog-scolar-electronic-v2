@@ -1,9 +1,12 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { magra_700 } from "../fonts"; // Import the font for the title
 import { Absence, Activity, Grade, Subject } from "@/types/curriculum-types";
 import { validateSubjectForm } from "@/general-utils/validateSubjecForm";
-import { updateSubject } from "@/server-utils/curriculum-functions";
+import {
+  getAllSubjects,
+  updateSubject
+} from "@/server-utils/curriculum-functions";
 import { useRouter } from "next/navigation";
 import GradesInput from "./GradesInput";
 import {
@@ -13,6 +16,8 @@ import {
   SubjectNameInput
 } from "./SubjectFormInputs";
 import SubjectAbsencesInput from "./SubjectAbsencesInput";
+import ModalListInput from "./ModalListInput";
+import LocationInput from "./LocationInput";
 
 const EditSubjectForm: React.FC<{
   subject: Subject;
@@ -26,6 +31,16 @@ const EditSubjectForm: React.FC<{
   const [activity, setActivity] = useState<Activity>(subject.activity);
   const [conduit, setConduit] = useState<number>(subject.conduit);
   const [error, setError] = useState<string | null>(null);
+
+  const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
+  useEffect(() => {
+    const fetchAllSubjects = async () => {
+      const { result, error } = await getAllSubjects(curriculumId);
+      if (error || !result) return;
+      setAllSubjects(result);
+    };
+    fetchAllSubjects();
+  }, []);
 
   const handleSubmit = async (newSubject: Subject) => {
     await updateSubject(curriculumId, subject.id.$oid, newSubject);
@@ -88,6 +103,11 @@ const EditSubjectForm: React.FC<{
         <ConduitInput
           conduit={conduit}
           setConduit={(conduit: number) => setConduit(conduit)}
+        />
+        <LocationInput
+          setAllSubjects={setAllSubjects}
+          allSubjects={allSubjects}
+          subject={subject}
         />
 
         <div className="text-red-500">{error}</div>

@@ -8,6 +8,8 @@ import { FC } from "react";
 // components
 import ModalListInput from "./ModalListInput";
 import RemoveButton from "@/components/RemoveButton";
+// hooks
+import { useMemo, useEffect } from "react";
 
 const SubjectAbsencesInput: FC<{
   absences: Absence[];
@@ -23,13 +25,23 @@ const SubjectAbsencesInput: FC<{
       }
     ]);
 
+  const orderedAbsences = useMemo(() => {
+    return absences.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  }, [absences]);
+
+  useEffect(() => {
+    setAbsences(orderedAbsences);
+  }, [orderedAbsences]);
+
   return (
     <ModalListInput
       addItem={addNewAbsence}
       label="Absențe"
       triggerLabel="Vezi absențe"
     >
-      {absences.map((absence, index) => (
+      {orderedAbsences.map((absence, index) => (
         <AbsenceInput
           key={absence.id.$oid}
           setAbsences={setAbsences}

@@ -4,6 +4,28 @@ import { getCurriculumById, updateCurriculum } from "@/mongodb/curriculums";
 import { Subject } from "@/types/curriculum-types";
 import { ObjectId } from "mongodb";
 
+export const getAllSubjects = async (
+  curriculumId: string | null
+): Promise<{
+  result: Subject[] | null;
+  error: string | null;
+}> => {
+  try {
+    if (!curriculumId) throw "Parameter 'curriculumId' is null!";
+
+    const { result: curriculum, error: curriculumError } =
+      await getCurriculumById(curriculumId);
+    if (curriculumError || !curriculum)
+      throw "Error fetching curriculum: " + curriculumError;
+
+    const subjects = curriculum.subjects;
+
+    return { result: subjects, error: null };
+  } catch (err) {
+    return handleBasicFetchError(err);
+  }
+};
+
 export const getSubjectById = async (
   curriculumId: string | null,
   subjectId: string | null

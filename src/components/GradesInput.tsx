@@ -11,6 +11,8 @@ import { magra_400 } from "@/fonts";
 import ModalListInput from "./ModalListInput";
 import RemoveButton from "./RemoveButton";
 import NumberInput from "./NumberInput";
+// hooks
+import { useEffect, useMemo } from "react";
 
 const GradesInput: FC<{
   grades: Grade[];
@@ -22,12 +24,29 @@ const GradesInput: FC<{
       { score: 1, date: "", id: { $oid: await newStringId() } }
     ]);
 
+  const orderedGrades = useMemo(() => {
+    return grades.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+  }, [grades]);
+
+  useEffect(() => {
+    setGrades(orderedGrades);
+  }, [orderedGrades]);
+
   return (
-    <ModalListInput addItem={addGrade} label="Note" triggerLabel="Vezi note">
+    <ModalListInput
+      addItem={addGrade}
+      cancelChanges={async () => {}}
+      revertChanges={async () => {}}
+      saveChanges={async () => {}}
+      label="Note"
+      triggerLabel="Vezi note"
+    >
       <div className="w-full flex flex-col justify-start gap-[8px]">
         {grades.length ? <TableHeading /> : <></>}
         <div className={`w-full flex flex-col gap-[32px]`}>
-          {grades.map((grade, index) => (
+          {orderedGrades.map((grade, index) => (
             <GradeInput
               key={grade.id.$oid}
               setGrades={setGrades}
