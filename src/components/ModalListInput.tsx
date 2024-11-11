@@ -2,7 +2,7 @@
 
 import { magra_700 } from "@/fonts";
 import { Dialog, Transition } from "@headlessui/react";
-import { forwardRef, Fragment, useRef, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 
 interface ModalListInputProps {
   revertChanges: (() => boolean) | false;

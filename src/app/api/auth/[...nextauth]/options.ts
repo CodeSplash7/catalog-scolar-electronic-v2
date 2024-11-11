@@ -49,7 +49,7 @@ const options: AuthOptions = {
           credentials?.username
         );
 
-        const { result: r, error: e } = await createNewUser({
+        await createNewUser({
           password: "12345678",
           username: "rosca.rares-marian",
           email: "rrm@gmail.com",

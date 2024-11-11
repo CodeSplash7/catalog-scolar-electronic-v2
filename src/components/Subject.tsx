@@ -173,7 +173,7 @@ const OverAllAverage: FC<{ subject: Subject }> = ({ subject }) => (
   </div>
 );
 
-const ActivityHeading: FC<{ subject: Subject }> = ({ subject }) => (
+const ActivityHeading: FC<{ subject: Subject }> = () => (
   <div
     className={`col-span-2 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
   >
@@ -181,7 +181,7 @@ const ActivityHeading: FC<{ subject: Subject }> = ({ subject }) => (
   </div>
 );
 
-const ConduitHeading: FC<{ subject: Subject }> = ({ subject }) => (
+const ConduitHeading: FC<{ subject: Subject }> = () => (
   <div
     className={`col-span-1 row-span-1 flex items-center p-[10px] text-start ${magra_700.className} text-[#017EBA] border border-gray-300`}
   >

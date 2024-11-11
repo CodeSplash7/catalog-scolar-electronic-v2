@@ -61,7 +61,7 @@ const SubjectAbsencesInput: FC<{
 
   useEffect(() => {
     setAbsences(orderedAbsences);
-  }, [orderedAbsences]);
+  }, [orderedAbsences, setAbsences]);
 
   return (
     <ModalListInput

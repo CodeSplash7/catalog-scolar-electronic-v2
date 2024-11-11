@@ -58,7 +58,7 @@ const GradesInput: FC<{
 
   useEffect(() => {
     setGrades(orderedGrades);
-  }, [orderedGrades]);
+  }, [orderedGrades, setGrades]);
 
   return (
     <ModalListInput

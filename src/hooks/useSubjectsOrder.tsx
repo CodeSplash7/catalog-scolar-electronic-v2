@@ -21,7 +21,7 @@ const useSubjectsOrder = (
       setFinalSubjectsOrder(result);
     };
     fetchAllSubjects();
-  }, []);
+  }, [additionalSubject, curriculumId]);
 
   return {
     value: subjectsOrder,
