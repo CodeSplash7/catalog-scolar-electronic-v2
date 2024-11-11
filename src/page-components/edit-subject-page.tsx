@@ -1,7 +1,5 @@
 import EditSubjectForm from "@/components/EditSubjectForm";
-import {
-  getSubjectById,
-} from "@/server-utils/curriculum-functions";
+import { getSubjectById } from "@/server-utils/curriculum-functions";
 
 type Params = {
   curriculumId: string;
@@ -12,7 +10,6 @@ export default async function EditSubjectPage({ params }: { params: Params }) {
     params.curriculumId,
     params.subjectId
   );
-  console.log("edit page server log: ", subject, error);
   if (error || !subject) return;
 
   return (

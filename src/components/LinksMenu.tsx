@@ -5,7 +5,8 @@ import NavLinksModal from "./NavLinksModal";
 
 export default function LinksMenu() {
   const [isOpen, setIsOpen] = useState(false);
-  const closeModal = () => {setIsOpen(false); console.log("clsed")};
+  const closeModal = () => setIsOpen(false);
+
   const openModal = () => setIsOpen(true);
   return (
     <div className="">

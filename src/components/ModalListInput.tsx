@@ -5,10 +5,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import { forwardRef, Fragment, useRef, useState } from "react";
 
 interface ModalListInputProps {
-  revertChanges: (() => Promise<void>) | false;
+  revertChanges: (() => boolean) | false;
   addItem: (() => Promise<void>) | false;
-  saveChanges: (() => Promise<void>) | false;
-  cancelChanges: (() => Promise<void>) | false;
+  saveChanges: (() => boolean) | false;
+  deleteAll: (() => void) | false;
 
   label: string;
   triggerLabel: string;
@@ -19,12 +19,17 @@ export default function ModalListInput({
   revertChanges,
   addItem,
   saveChanges,
-  cancelChanges,
+  deleteAll,
   label,
   triggerLabel,
   children
 }: ModalListInputProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isConfirmationDisplayOpen, setIsConfirmationDisplayOpen] =
+    useState(false);
+  const [confirmationDisplayColor, setConfirmationDisplayColor] = useState("");
+  const [confirmationDisplayMessage, setConfirmationDisplayMessage] =
+    useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -34,6 +39,15 @@ export default function ModalListInput({
     }
   };
 
+  const showConfirmation = async (displayColor: string, message: string) => {
+    setConfirmationDisplayColor(displayColor);
+    setConfirmationDisplayMessage(message);
+
+    setIsConfirmationDisplayOpen(true);
+    await delay(300);
+    setIsConfirmationDisplayOpen(false);
+  };
+
   const handleAddItem = async () => {
     if (!addItem) return;
     await addItem();
@@ -41,13 +55,24 @@ export default function ModalListInput({
 
     scrollToBottom();
   };
+  const handleSaveChanges = async () => {
+    if (!saveChanges) return;
+    if (saveChanges()) showConfirmation("#007BFF", "Salvat");
+  };
+
+  const handleCancel = async () => {
+    if (revertChanges && revertChanges()) showConfirmation("#007BFF", "Anulat");
+    await delay(100);
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="flex flex-col items-start w-full overflow-x-hidden">
       <label className="text-lg">{label}:</label>
       <button
         onClick={() => setIsModalOpen(!isModalOpen)}
         type="button"
-        className={`text-blue-500 underline`}
+        className={`text-white bg-[#007bff] px-[16px] py-[8px] rounded-md`}
       >
         {triggerLabel}
       </button>
@@ -61,7 +86,7 @@ export default function ModalListInput({
         >
           <Transition.Child
             as={Fragment}
-            enter="ease-out duration-300"
+            enter="ease-out duration-250"
             enterFrom="opacity-0"
             enterTo="opacity-100"
             leave="ease-in duration-200"
@@ -83,10 +108,24 @@ export default function ModalListInput({
                 leaveTo="opacity-0"
               >
                 <Dialog.Panel className="flex flex-col inset-y-0 right-0 w-full h-full transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all">
-                  <ModalTopBar
-                    label={label}
-                    closeModal={() => setIsModalOpen(false)}
-                  />
+                  <Transition
+                    show={isConfirmationDisplayOpen}
+                    as={Fragment}
+                    enter="ease-out"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in "
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Dialog.Panel
+                      className={`bg-[${confirmationDisplayColor}] w-full h-full absolute z-[20] flex items-center justify-center text-white text-[30px]`}
+                    >
+                      {confirmationDisplayMessage}
+                    </Dialog.Panel>
+                  </Transition>
+
+                  <ModalTopBar label={label} closeModal={handleCancel} />
                   <div
                     ref={scrollRef}
                     className={`w-full h-full flex flex-col overflow-y-scroll scroll-smooth px-[16px] py-[32px] gap-[32px]`}
@@ -94,17 +133,23 @@ export default function ModalListInput({
                     {children}
                   </div>
                   <div
-                    className={`w-full h-fit flex flex-wrap p-[16px] border-t border-slate-500 gap-[4px]`}
+                    className={`w-full h-fit flex flex-wrap justify-between p-[16px] border-t border-slate-500 gap-[4px]`}
                   >
                     {addItem && <AddItemButton handleAddItem={handleAddItem} />}
                     {saveChanges && (
-                      <SaveChangesButton handleSaveChanges={() => {}} />
+                      <SaveChangesButton
+                        handleSaveChanges={handleSaveChanges}
+                      />
                     )}
                     {revertChanges && (
-                      <RevertChangesButton handleRevertChanges={() => {}} />
+                      <RevertChangesButton
+                        handleRevertChanges={revertChanges}
+                      />
                     )}
 
-                    {addItem && <DeleteAllButton handleDeleteAll={() => {}} />}
+                    {addItem && deleteAll && (
+                      <DeleteAllButton handleDeleteAll={deleteAll} />
+                    )}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -213,7 +258,7 @@ const SaveChangesButton = ({
   );
 };
 
-const DeleteAllButton = ({
+export const DeleteAllButton = ({
   handleDeleteAll
 }: {
   handleDeleteAll: () => void;
@@ -221,10 +266,8 @@ const DeleteAllButton = ({
   return (
     <button
       type="button"
-      className="w-fit ml-auto bg-[#B22222] h-[48px] text-white rounded-lg px-4 py-2 text-[30px] flex items-center justify-center"
-      onClick={async () => {
-        await handleDeleteAll();
-      }}
+      className="w-fit  bg-[#B22222] h-[48px] text-white rounded-lg px-4 py-2 text-[30px] flex items-center justify-center"
+      onClick={handleDeleteAll}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

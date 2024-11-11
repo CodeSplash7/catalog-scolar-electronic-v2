@@ -4,7 +4,7 @@
 import newStringId from "@/server-utils/newStringId";
 // types
 import { Absence } from "@/types/curriculum-types";
-import { FC } from "react";
+import { FC, useState } from "react";
 // components
 import ModalListInput from "./ModalListInput";
 import RemoveButton from "@/components/RemoveButton";
@@ -15,6 +15,11 @@ const SubjectAbsencesInput: FC<{
   absences: Absence[];
   setAbsences: (absences: Absence[]) => void;
 }> = ({ absences, setAbsences }) => {
+  const [initialAbsences, setInitialAbsences] = useState<Absence[]>(
+    absences.map((a) => {
+      return { ...a };
+    })
+  );
   const addNewAbsence = async () =>
     setAbsences([
       ...absences,
@@ -24,6 +29,29 @@ const SubjectAbsencesInput: FC<{
         id: { $oid: await newStringId() }
       }
     ]);
+
+  const revertAbsences = () => {
+    if (JSON.stringify(absences) === JSON.stringify(initialAbsences))
+      return false;
+
+    setAbsences(
+      initialAbsences.map((g) => {
+        return { ...g };
+      })
+    );
+    return true;
+  };
+  const saveAbsences = () => {
+    if (JSON.stringify(absences) === JSON.stringify(initialAbsences))
+      return false;
+    setInitialAbsences(
+      absences.map((a) => {
+        return { ...a };
+      })
+    );
+    return true;
+  };
+  const deleteAll = () => setAbsences([]);
 
   const orderedAbsences = useMemo(() => {
     return absences.sort(
@@ -38,6 +66,9 @@ const SubjectAbsencesInput: FC<{
   return (
     <ModalListInput
       addItem={addNewAbsence}
+      deleteAll={deleteAll}
+      revertChanges={revertAbsences}
+      saveChanges={saveAbsences}
       label="Absențe"
       triggerLabel="Vezi absențe"
     >
@@ -61,7 +92,7 @@ const AbsenceInput: FC<{
   index: number;
 }> = ({ absences, setAbsences, absence, index }) => {
   return (
-    <div className="flex flex-col items-start gap-2 relative">
+    <div className="flex flex-col items-start gap-2">
       <div>{index + 1}.</div>
       <div className="w-full">
         <DateInput
@@ -95,7 +126,7 @@ const DateInput: FC<{
   absence: Absence;
   index: number;
 }> = ({ absences, setAbsences, index, absence }) => (
-  <div className="w-full h-fit relative">
+  <div className="w-full h-fit relative z-[10]">
     <input
       type="date"
       value={absence.date}

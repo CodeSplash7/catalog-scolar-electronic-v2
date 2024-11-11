@@ -25,7 +25,7 @@ export default function SortableSubjectItem({
     color: isActive ? "#ffffff" : "#000000",
     border: "1px solid #ccc",
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
     overflowX: "hidden"
   };
 
@@ -36,8 +36,7 @@ export default function SortableSubjectItem({
       {...attributes}
       {...(isActive && listeners)}
     >
-      <div>{subjectName}</div>
-      {isActive && (
+      {isActive ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           height="24px"
@@ -47,7 +46,10 @@ export default function SortableSubjectItem({
         >
           <path d="M160-360v-80h640v80H160Zm0-160v-80h640v80H160Z" />
         </svg>
+      ) : (
+        <div className={"w-[24px]"}></div>
       )}
+      <div>{subjectName}</div>
     </li>
   );
 }

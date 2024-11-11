@@ -58,7 +58,6 @@ const options: AuthOptions = {
           lastName: "Rosca",
           fathersInitial: "A"
         });
-        console.log(r, e);
 
         if (error || !appUser) return null;
         const isValidPassword = await verifyPassword(

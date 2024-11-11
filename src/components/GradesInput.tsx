@@ -4,7 +4,7 @@
 import newStringId from "@/server-utils/newStringId";
 // types
 import { Grade } from "@/types/curriculum-types";
-import { FC } from "react";
+import { FC, useState } from "react";
 // fonts
 import { magra_400 } from "@/fonts";
 // components
@@ -18,11 +18,37 @@ const GradesInput: FC<{
   grades: Grade[];
   setGrades: (grades: Grade[]) => void;
 }> = ({ grades, setGrades }) => {
+  const [initialGrades, setInitialGrades] = useState<Grade[]>(
+    grades.map((g) => {
+      return { ...g };
+    })
+  );
+
   const addGrade = async () =>
     setGrades([
       ...grades,
       { score: 1, date: "", id: { $oid: await newStringId() } }
     ]);
+
+  const revertGrades = () => {
+    if (JSON.stringify(grades) === JSON.stringify(initialGrades)) return false;
+    setGrades(
+      initialGrades.map((g) => {
+        return { ...g };
+      })
+    );
+    return true;
+  };
+  const saveGrades = () => {
+    if (JSON.stringify(grades) === JSON.stringify(initialGrades)) return false;
+    setInitialGrades(
+      grades.map((g) => {
+        return { ...g };
+      })
+    );
+    return true;
+  };
+  const deleteAll = () => setGrades([]);
 
   const orderedGrades = useMemo(() => {
     return grades.sort(
@@ -37,9 +63,9 @@ const GradesInput: FC<{
   return (
     <ModalListInput
       addItem={addGrade}
-      cancelChanges={async () => {}}
-      revertChanges={async () => {}}
-      saveChanges={async () => {}}
+      revertChanges={revertGrades}
+      saveChanges={saveGrades}
+      deleteAll={deleteAll}
       label="Note"
       triggerLabel="Vezi note"
     >

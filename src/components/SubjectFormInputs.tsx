@@ -9,34 +9,39 @@ import { FC } from "react";
 import { useRouter } from "next/navigation";
 // components
 import NumberInput from "./NumberInput";
+import { DeleteAllButton } from "./ModalListInput";
 
-export const FormSubmitDelete: React.FC<{ submitForm: () => void }> = ({
-  submitForm
-}) => {
+export const FormSubmitDelete: React.FC<{
+  submitForm: () => void;
+  deleteSubject?: () => void;
+}> = ({ submitForm, deleteSubject }) => {
   const router = useRouter();
 
   return (
-    <div className={`w-full flex-col`}>
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          submitForm();
-        }}
-        type="submit"
-        className="bg-green-500 flex justify-center items-center text-white rounded-lg px-6 py-3 mt-4 text-lg font-semibold hover:bg-green-600 focus:ring-4 focus:ring-green-300 transition-all duration-300 ease-in-out w-full"
-      >
-        <SaveIcon />
-      </button>
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          router.push("/catalogul-meu");
-        }}
-        type="submit"
-        className="bg-red-500 flex justify-center items-center text-white rounded-lg px-6 py-3 mt-4 text-lg font-semibold hover:bg-red-600 focus:ring-4 focus:ring-red-300 transition-all duration-300 ease-in-out w-full"
-      >
-        <CloseIcon/>
-      </button>
+    <div className={`w-full flex flex-col items-start gap-[24px]`}>
+      <div className={`w-full flex flex-row gap-[8px]`}>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            submitForm();
+          }}
+          type="submit"
+          className="bg-green-500 flex justify-center items-center text-white rounded-lg px-6 py-3 mt-4 text-lg font-semibold hover:bg-green-600 focus:ring-4 focus:ring-green-300 transition-all duration-300 ease-in-out w-full"
+        >
+          <SaveIcon />
+        </button>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            router.push("/catalogul-meu");
+          }}
+          type="submit"
+          className="bg-red-500 flex justify-center items-center text-white rounded-lg px-6 py-3 mt-4 text-lg font-semibold hover:bg-red-600 focus:ring-4 focus:ring-red-300 transition-all duration-300 ease-in-out w-full"
+        >
+          <CancelIcon />
+        </button>
+      </div>
+      {deleteSubject && <DeleteAllButton handleDeleteAll={deleteSubject} />}
     </div>
   );
 };
@@ -130,7 +135,7 @@ const SaveIcon = () => (
   </svg>
 );
 
-const CloseIcon = () => (
+const CancelIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     height="32px"

@@ -1,13 +1,17 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { magra_700 } from "../fonts"; // Import the font for the title
-import { Absence, Activity, Grade, Subject } from "@/types/curriculum-types";
-import { validateSubjectForm } from "@/general-utils/validateSubjecForm";
-import {
-  getAllSubjects,
-  updateSubject
-} from "@/server-utils/curriculum-functions";
+// hooks
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+// fonts
+import { magra_700 } from "../fonts";
+// types
+import { FC } from "react";
+import { Absence, Activity, Grade, Subject } from "@/types/curriculum-types";
+// utils
+import { updateCurriculum } from "@/mongodb/curriculums";
+import { validateSubjectForm } from "@/general-utils/validateSubjecForm";
+import { deleteSubject } from "@/server-utils/curriculum-functions";
+// components
 import GradesInput from "./GradesInput";
 import {
   ActivityInput,
@@ -16,40 +20,54 @@ import {
   SubjectNameInput
 } from "./SubjectFormInputs";
 import SubjectAbsencesInput from "./SubjectAbsencesInput";
-import ModalListInput from "./ModalListInput";
 import LocationInput from "./LocationInput";
+import useSubjectsOrder from "@/hooks/useSubjectsOrder";
+import useSubjectInputs from "@/hooks/useSubjectInputs";
 
-const EditSubjectForm: React.FC<{
+const EditSubjectForm: FC<{
   subject: Subject;
   curriculumId: string;
 }> = ({ subject, curriculumId }) => {
   const router = useRouter();
 
-  const [subjectName, setSubjectName] = useState<string>(subject.subjectName);
-  const [absences, setAbsences] = useState<Absence[]>(subject.absences);
-  const [grades, setGrades] = useState<Grade[]>(subject.grades);
-  const [activity, setActivity] = useState<Activity>(subject.activity);
-  const [conduit, setConduit] = useState<number>(subject.conduit);
+  const {
+    name,
+    setName,
+    absences,
+    setAbsences,
+    grades,
+    setGrades,
+    activity,
+    setActivity,
+    conduit,
+    setConduit
+  } = useSubjectInputs(subject);
+
   const [error, setError] = useState<string | null>(null);
 
-  const [allSubjects, setAllSubjects] = useState<Subject[]>([]);
-  useEffect(() => {
-    const fetchAllSubjects = async () => {
-      const { result, error } = await getAllSubjects(curriculumId);
-      if (error || !result) return;
-      setAllSubjects(result);
-    };
-    fetchAllSubjects();
-  }, []);
+  const subjectsOrder = useSubjectsOrder(curriculumId);
 
   const handleSubmit = async (newSubject: Subject) => {
-    await updateSubject(curriculumId, subject.id.$oid, newSubject);
+    const subjectIndex = subjectsOrder.finalValue.findIndex(
+      (s) => s.id.$oid === subject.id.$oid
+    );
+
+    if (subjectIndex === -1)
+      return `Subject with ID ${subject.id.$oid} not found in the curriculum.`;
+
+    subjectsOrder.finalValue[subjectIndex] = {
+      ...newSubject
+    };
+
+    await updateCurriculum(curriculumId, {
+      subjects: subjectsOrder.finalValue
+    });
     router.push("/catalogul-meu");
   };
 
   const validateForm = useMemo(() => {
     const errors = validateSubjectForm({
-      subjectName,
+      subjectName: name,
       absences,
       grades,
       activity,
@@ -58,17 +76,22 @@ const EditSubjectForm: React.FC<{
     if (errors) setError(errors[0]);
 
     return !!errors;
-  }, [subjectName, absences, grades, activity, conduit]);
+  }, [name, absences, grades, activity, conduit]);
   const submitForm = async () => {
     if (validateForm) return;
     handleSubmit({
       id: subject.id,
-      subjectName,
+      subjectName: name,
       absences,
       grades,
       activity,
       conduit
     });
+  };
+
+  const handleDeleteSubject = async () => {
+    await deleteSubject(curriculumId, subject.id.$oid);
+    router.push("/catalogul-meu");
   };
 
   return (
@@ -80,8 +103,8 @@ const EditSubjectForm: React.FC<{
       </h2>
       <form className="flex flex-col gap-[32px] items-start">
         <SubjectNameInput
-          subjectName={subjectName}
-          setSubjectName={(name: string) => setSubjectName(name)}
+          subjectName={name}
+          setSubjectName={(name: string) => setName(name)}
         />
         <div className="flex justify-between w-full">
           <SubjectAbsencesInput
@@ -104,15 +127,14 @@ const EditSubjectForm: React.FC<{
           conduit={conduit}
           setConduit={(conduit: number) => setConduit(conduit)}
         />
-        <LocationInput
-          setAllSubjects={setAllSubjects}
-          allSubjects={allSubjects}
-          subject={subject}
-        />
+        <LocationInput subjectsOrder={subjectsOrder} subject={subject} />
 
         <div className="text-red-500">{error}</div>
       </form>
-      <FormSubmitDelete submitForm={submitForm} />
+      <FormSubmitDelete
+        submitForm={submitForm}
+        deleteSubject={handleDeleteSubject}
+      />
     </div>
   );
 };

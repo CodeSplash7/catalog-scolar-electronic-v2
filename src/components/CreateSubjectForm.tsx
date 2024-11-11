@@ -5,39 +5,64 @@ import { useRouter } from "next/navigation";
 // fonts
 import { magra_700 } from "@/fonts";
 // types
-import { Absence, Activity, Grade, Subject } from "@/types/curriculum-types";
+import { Absence, Activity, Grade } from "@/types/curriculum-types";
 import { FC } from "react";
 // utils
 import { validateSubjectForm } from "@/general-utils/validateSubjecForm";
 import newStringId from "@/server-utils/newStringId";
-import { createSubject } from "@/server-utils/curriculum-functions";
-import routes from "@/general-utils/page-routes";
 // components
 import SubjectAbsencesInput from "./SubjectAbsencesInput";
 import GradesInput from "./GradesInput";
-import { ActivityInput, ConduitInput, FormSubmitDelete, SubjectNameInput } from "./SubjectFormInputs";
-
+import {
+  ActivityInput,
+  ConduitInput,
+  FormSubmitDelete,
+  SubjectNameInput
+} from "./SubjectFormInputs";
+import LocationInput from "./LocationInput";
+import { updateCurriculum } from "@/mongodb/curriculums";
+import useSubjectsOrder from "@/hooks/useSubjectsOrder";
+import useSubjectInputs from "@/hooks/useSubjectInputs";
 
 const CreateSubjectForm: FC<{
   curriculumId: string;
 }> = ({ curriculumId }) => {
   const router = useRouter();
   // form inputs
-  const [subjectName, setSubjectName] = useState<string>("");
-  const [absences, setAbsences] = useState<Absence[]>([]);
-  const [grades, setGrades] = useState<Grade[]>([]);
-  const [activity, setActivity] = useState<Activity>({ good: 0, bad: 0 });
-  const [conduit, setConduit] = useState<number>(10);
+  const {
+    name,
+    setName,
+    absences,
+    setAbsences,
+    grades,
+    setGrades,
+    activity,
+    setActivity,
+    conduit,
+    setConduit
+  } = useSubjectInputs();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (newSubject: Subject) => {
-    await createSubject(curriculumId, newSubject);
-    router.push(routes.catalogulMeu());
+  const [mockSubject] = useState({
+    id: { $oid: "123" },
+    subjectName: "Materia nouă",
+    absences,
+    grades,
+    activity,
+    conduit
+  });
+  const subjectsOrder = useSubjectsOrder(curriculumId, mockSubject);
+
+  const handleSubmit = async () => {
+    await updateCurriculum(curriculumId, {
+      subjects: subjectsOrder.finalValue
+    });
+    router.push("/catalogul-meu");
   };
 
   const validateForm = useMemo(() => {
     const errors = validateSubjectForm({
-      subjectName,
+      subjectName: name,
       absences,
       grades,
       activity,
@@ -46,18 +71,22 @@ const CreateSubjectForm: FC<{
     if (errors) setError(errors[0]);
 
     return !!errors;
-  }, [subjectName, absences, grades, activity, conduit]);
+  }, [name, absences, grades, activity, conduit]);
 
   const submitForm = async () => {
     if (validateForm) return;
-    handleSubmit({
-      id: { $oid: await newStringId() },
-      subjectName,
-      absences,
-      grades,
-      activity,
-      conduit
-    });
+    // const newSubject = { ...mockSubject, id: { $oid: await newStringId() } };
+    const newSubject = subjectsOrder.finalValue.find(
+      (s) => s.id.$oid === mockSubject.id.$oid
+    )!;
+    newSubject.id = { $oid: await newStringId() };
+    newSubject.subjectName = name;
+    newSubject.absences = absences;
+    newSubject.grades = grades;
+    newSubject.activity = activity;
+    newSubject.conduit = conduit;
+
+    handleSubmit();
   };
 
   return (
@@ -69,8 +98,8 @@ const CreateSubjectForm: FC<{
       </h2>
       <form className="flex flex-col gap-[32px] items-start">
         <SubjectNameInput
-          subjectName={subjectName}
-          setSubjectName={(name: string) => setSubjectName(name)}
+          subjectName={name}
+          setSubjectName={(name: string) => setName(name)}
         />
         <div className="flex justify-between w-full">
           <SubjectAbsencesInput
@@ -93,6 +122,8 @@ const CreateSubjectForm: FC<{
           conduit={conduit}
           setConduit={(conduit: number) => setConduit(conduit)}
         />
+
+        <LocationInput subjectsOrder={subjectsOrder} subject={mockSubject} />
 
         <div className="text-red-500">{error}</div>
       </form>
