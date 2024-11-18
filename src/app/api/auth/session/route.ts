@@ -1,29 +1,29 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 import options, { CustomSession } from "../[...nextauth]/options";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
   try {
-    const session = (await getServerSession(
-      req,
-      res,
-      options
-    )) as CustomSession;
+    const session = (await getServerSession(options)) as CustomSession;
 
     if (!session) {
       console.error("Session is undefined or not found");
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: No session found" });
+      return NextResponse.json(
+        { message: "Unauthorized: No session found" },
+        { status: 401 }
+      );
     }
 
     if (!session.user?.id) {
       console.error("Session is missing `id`: ", session);
-      return res.status(500).json({ message: "Invalid session: Missing `id`" });
+      return NextResponse.json(
+        { message: "Invalid session: Missing `id`" },
+        { status: 500 }
+      );
     }
 
-    // Send a valid JSON response
-    res.status(200).json({
+    // Return a valid JSON response
+    return NextResponse.json({
       ...session,
       user: {
         ...session.user,
@@ -33,9 +33,10 @@ export async function GET(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error in /api/auth/session handler:", error);
-      return res
-        .status(500)
-        .json({ message: "Internal Server Error", error: error.message });
+      return NextResponse.json(
+        { message: "Internal Server Error", error: error.message },
+        { status: 500 }
+      );
     }
   }
 }

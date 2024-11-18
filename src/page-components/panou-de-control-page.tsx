@@ -69,6 +69,7 @@ export default async function PanouDeControlPage() {
           >
             {curriculum.subjects.map((s) => (
               <Link
+                key={s.id.$oid}
                 className={`underline`}
                 href={routes.edit(curriculum._id.toString(), s.id.$oid)}
               >
