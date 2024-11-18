@@ -4,14 +4,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import client from "@/mongodb/index";
 import { JWT } from "next-auth/jwt";
-import { createNewUser, getUserByUsername } from "@/mongodb/users";
+import { getUserByUsername } from "@/mongodb/users";
 import { verifyPassword } from "@/server-utils/password-functions";
 
 // Extend the Session type to include the id property
 export interface CustomSession extends Session {
   user: {
     id: string; // Include other user properties if needed
-    email: string;
     name: string;
   };
 }
@@ -49,16 +48,6 @@ const options: AuthOptions = {
           credentials?.username
         );
 
-        await createNewUser({
-          password: "12345678",
-          username: "rosca.rares-marian",
-          email: "rrm@gmail.com",
-          userClass: { gradeLevel: "V", section: null },
-          firstName: "Rares Marian",
-          lastName: "Rosca",
-          fathersInitial: "A"
-        });
-
         if (error || !appUser) return null;
         const isValidPassword = await verifyPassword(
           credentials?.password ?? null,
@@ -77,31 +66,26 @@ const options: AuthOptions = {
     strategy: "jwt"
   },
   callbacks: {
-    async jwt({ token }) {
-      const { result: appUser } = await getUserByUsername(
-        (token as CustomToken).name
-      );
-      if (appUser) {
-        token.name = appUser.profile.username;
-        token.id = appUser._id;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
       }
-
       return token;
     },
     async session({ session, token }) {
-      const customSession = session as CustomSession;
-      customSession.user.id = (token as CustomToken).id;
+      const customSession: CustomSession = {
+        ...session,
+        user: {
+          id: (token as CustomToken).id,
+          name: token.name || ""
+        }
+      };
 
       return customSession;
     },
     async signIn() {
       return true;
-      // const { result: users } = await getUsers();
-      // const appUser = users?.find(
-      //   (u) =>
-      //     u.account.email === user.email && u.profile.username === user.name
-      // );
-      // return appUser ? true : false;
     },
     async redirect({ baseUrl }) {
       return baseUrl;

@@ -12,9 +12,20 @@ export interface UserProfile {
   curriculumId: string; // ObjectId
 }
 
+export type UserClassGradeLevel =
+  | "V"
+  | "VI"
+  | "VII"
+  | "VIII"
+  | "IX"
+  | "X"
+  | "XI"
+  | "XII";
+
+export type UserClassSection = "A" | "B" | "C" | "D" | "E" | "-";
 export interface UserClass {
-  gradeLevel: "V" | "VI" | "VII" | "VIII" | "IX" | "X" | "XI" | "XII";
-  section: "A" | "B" | "C" | "D" | "E" | null;
+  gradeLevel: UserClassGradeLevel;
+  section: UserClassSection;
 }
 
 export interface UserAccount {

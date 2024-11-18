@@ -8,7 +8,7 @@ import CurriculumDisplay from "@/components/CurriculumDisplay";
 import { magra_400, magra_700 } from "@/fonts";
 
 // authentication
-import { CustomSession } from "@/app/api/auth/[...nextauth]/options";
+import options, { CustomSession } from "@/app/api/auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 
 // general-utils
@@ -22,20 +22,18 @@ import { UserDocument } from "@/types/user-types";
 
 // database queries
 import { getCurriculumById } from "@/mongodb/curriculums";
-import { getUserByUsername } from "@/mongodb/users";
+import { getUserById } from "@/mongodb/users";
 
 // hooks
 import { redirect } from "next/navigation";
 
 export default async function CatalogulMeuPage() {
-  const session = (await getServerSession()) as CustomSession;
+  const session = (await getServerSession(options)) as CustomSession;
   if (!session) {
     redirect(routes.signin());
   }
 
-  const { result: user, error: userError } = await getUserByUsername(
-    session.user.name
-  );
+  const { result: user, error: userError } = await getUserById(session.user.id);
   if (userError || !user) throw userError;
 
   const { result: curriculum, error: curriculumError } =
@@ -45,7 +43,15 @@ export default async function CatalogulMeuPage() {
   return (
     <div className="flex flex-col w-full h-fit px-[16px] gap-[36px]">
       <div className="flex flex-col items-center w-full h-fit mt-[104px]">
-        <UserIcon w={128} />
+        <ClickTracker
+          actionType="enter-dashboard"
+          itemIdentifiers={{
+            curriculumId: curriculum._id.toString(),
+            subjectId: null
+          }}
+        >
+          <UserIcon w={128} />
+        </ClickTracker>
         <UserMainInformation user={user} />
         <UserCurriculum curriculum={curriculum} />
       </div>

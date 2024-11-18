@@ -141,13 +141,14 @@ export const createNewUser = async (newUserInfo: {
 
     const validFirstName = removeDuplicateSpaces(firstName);
     const validLastName = removeDuplicateSpaces(lastName);
+    const validFathersInitial = removeDuplicateSpaces(fathersInitial);
 
     const newUserDocument: UserDocument = {
       profile: {
         userClass,
-        firstName: removeDuplicateSpaces(firstName),
-        lastName: removeDuplicateSpaces(lastName),
-        fathersInitial: removeDuplicateSpaces(fathersInitial),
+        firstName: validFirstName,
+        lastName: validLastName,
+        fathersInitial: validFathersInitial,
         username: generateUsername(validFirstName, validLastName),
         curriculumId: "" // TODO: Gotta handle this somehow too
       },

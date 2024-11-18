@@ -10,9 +10,10 @@ interface ModalListInputProps {
   saveChanges: (() => boolean) | false;
   deleteAll: (() => void) | false;
 
-  label: string;
+  label: string | null;
   triggerLabel: string;
   children: React.ReactNode;
+  triggerButton?: React.ReactNode;
 }
 
 export default function ModalListInput({
@@ -22,12 +23,14 @@ export default function ModalListInput({
   deleteAll,
   label,
   triggerLabel,
+  triggerButton,
   children
 }: ModalListInputProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmationDisplayOpen, setIsConfirmationDisplayOpen] =
     useState(false);
-  const [confirmationDisplayColor, setConfirmationDisplayColor] = useState("");
+  const [confirmationDisplayColor, setConfirmationDisplayColor] =
+    useState<string>();
   const [confirmationDisplayMessage, setConfirmationDisplayMessage] =
     useState("");
 
@@ -42,6 +45,8 @@ export default function ModalListInput({
   const showConfirmation = async (displayColor: string, message: string) => {
     setConfirmationDisplayColor(displayColor);
     setConfirmationDisplayMessage(message);
+
+    console.log(confirmationDisplayColor, displayColor);
 
     setIsConfirmationDisplayOpen(true);
     await delay(300);
@@ -60,6 +65,11 @@ export default function ModalListInput({
     if (saveChanges()) showConfirmation("#007BFF", "Salvat");
   };
 
+  const handleRevertChanges = async () => {
+    if (!revertChanges) return;
+    if (revertChanges()) showConfirmation("#ff6b6b", "Restablit");
+  };
+
   const handleCancel = async () => {
     if (revertChanges && revertChanges()) showConfirmation("#007BFF", "Anulat");
     await delay(100);
@@ -68,14 +78,20 @@ export default function ModalListInput({
 
   return (
     <div className="flex flex-col items-start w-full overflow-x-hidden">
-      <label className="text-lg">{label}:</label>
-      <button
-        onClick={() => setIsModalOpen(!isModalOpen)}
-        type="button"
-        className={`text-white bg-[#007bff] px-[16px] py-[8px] rounded-md`}
-      >
-        {triggerLabel}
-      </button>
+      {label && <label className="text-lg">{label}:</label>}
+      {!!triggerButton ? (
+        <div onClick={() => setIsModalOpen(!isModalOpen)} className={`w-full`}>
+          {triggerButton}
+        </div>
+      ) : (
+        <button
+          onClick={() => setIsModalOpen(!isModalOpen)}
+          type="button"
+          className={`text-white w-full bg-[#007bff] px-[16px] py-[8px] rounded-md`}
+        >
+          {triggerLabel}
+        </button>
+      )}
       <Transition appear show={isModalOpen} as={Fragment}>
         <Dialog
           as="div"
@@ -119,13 +135,17 @@ export default function ModalListInput({
                     leaveTo="opacity-0"
                   >
                     <Dialog.Panel
-                      className={`bg-[${confirmationDisplayColor}] w-full h-full absolute z-[20] flex items-center justify-center text-white text-[30px]`}
+                      style={{ background: confirmationDisplayColor }}
+                      className={` w-full h-full absolute z-[20] flex items-center justify-center text-white text-[30px]`}
                     >
                       {confirmationDisplayMessage}
                     </Dialog.Panel>
                   </Transition>
 
-                  <ModalTopBar label={label} closeModal={handleCancel} />
+                  <ModalTopBar
+                    label={label || triggerLabel}
+                    closeModal={handleCancel}
+                  />
                   <div
                     ref={scrollRef}
                     className={`w-full h-full flex flex-col overflow-y-scroll scroll-smooth px-[16px] py-[32px] gap-[32px]`}
@@ -143,7 +163,7 @@ export default function ModalListInput({
                     )}
                     {revertChanges && (
                       <RevertChangesButton
-                        handleRevertChanges={revertChanges}
+                        handleRevertChanges={handleRevertChanges}
                       />
                     )}
 

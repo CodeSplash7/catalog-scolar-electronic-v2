@@ -6,7 +6,7 @@ import routes from "@/general-utils/page-routes";
 
 type ClickTrackerProps = {
   children: ReactNode;
-  actionType: "edit-subject" | "create-subject";
+  actionType: "edit-subject" | "create-subject" | "enter-dashboard";
   itemIdentifiers: { curriculumId: string; subjectId: string | null };
 };
 // Update the component to accept children and a function as props
@@ -25,6 +25,9 @@ const ClickTracker: React.FC<ClickTrackerProps> = ({
 
   if (actionType === "create-subject" && !subjectId)
     formLink = routes.create(curriculumId);
+
+  if (actionType === "enter-dashboard" && !subjectId)
+    formLink = routes.panouDeControl();
 
   if (!formLink) return;
 
