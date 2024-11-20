@@ -74,13 +74,13 @@ SingleCurriculumFetchPromiseWithObjectId => {
     };
 
     const result = await curriculums.insertOne(newCurriculumDocument);
-    const newUser = {
+    const newCurriculum = {
       ...newCurriculumDocument,
       _id: result.insertedId
     } as CurriculumDocumentWithObjectId;
 
     if (!result.acknowledged) throw "Failed to create new user";
-    return { error: null, result: newUser };
+    return { error: null, result: newCurriculum };
   } catch (err) {
     return handleBasicFetchError(err);
   }

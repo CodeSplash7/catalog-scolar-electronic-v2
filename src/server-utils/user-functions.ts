@@ -1,5 +1,6 @@
 "use server";
 
+import createUsername from "@/general-utils/createUsername";
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
 import { getUserById, updateUser } from "@/mongodb/users";
 import { UserClassGradeLevel, UserClassSection } from "@/types/user-types";
@@ -9,9 +10,7 @@ export async function updateUserLastName(userId: string, newLastName: string) {
     const { result: user, error: userError } = await getUserById(userId);
     if (userError || !user) throw "Failed to find the user: " + userError;
 
-    const newUsername = `${newLastName.toLowerCase()}.${user.profile.firstName
-      .replace(" ", "-")
-      .toLowerCase()}`;
+    const newUsername = createUsername(newLastName, user.profile.firstName);
 
     const { result: updateResult, error: updateError } = await updateUser(
       userId,
@@ -41,9 +40,7 @@ export async function updateUserFirstName(
     const { result: user, error: userError } = await getUserById(userId);
     if (userError || !user) throw "Failed to find the user: " + userError;
 
-    const newUsername = `${user.profile.lastName.toLowerCase()}.${newFirstName
-      .replace(" ", "-")
-      .toLowerCase()}`;
+    const newUsername = createUsername(user.profile.lastName, newFirstName);
 
     const { result: updateResult, error: updateError } = await updateUser(
       userId,

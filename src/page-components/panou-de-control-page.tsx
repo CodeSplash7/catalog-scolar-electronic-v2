@@ -15,6 +15,7 @@ import { getUserById } from "@/mongodb/users";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import LogOutButton from "@/components/LogOutButton";
 
 export default async function PanouDeControlPage() {
   const session = (await getServerSession(options)) as CustomSession;
@@ -38,6 +39,9 @@ export default async function PanouDeControlPage() {
     <div
       className={`w-full h-fit px-[32px] py-[32px] flex flex-col gap-[32px]`}
     >
+      <div className="w-full h-fit flex justify-end">
+        <LogOutButton />
+      </div>
       <div className={`${magra_400.className} text-[30px] text-blue-600`}>
         BINE AI VENIT!{" "}
         <div className={`${magra_700.className} text-gray-900 w-fit`}>
@@ -87,54 +91,57 @@ export default async function PanouDeControlPage() {
         </div>
         <div className={`w-full h-fit flex flex-col gap-[24px]`}>
           <div className={`w-full h-fit flex gap-[8px] items-center`}>
-            <div>Numele de familie: </div>
-            <div className={`font-bold`}>{user.profile.lastName}</div>
             <div>
               <LastNameInput
+                onChange={null}
+                showValue
+                showLabel
                 userId={user._id.toString()}
-                userLastName={user.profile.lastName}
+                lastName={user.profile.lastName}
               />
             </div>
           </div>
           <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>Numele: </div>
-            <div className={`font-bold`}>{user.profile.firstName}</div>
             <div>
               <FirstNameInput
+                onChange={null}
+                showValue
+                showLabel
                 userId={user._id.toString()}
-                userFirstName={user.profile.firstName}
+                firstName={user.profile.firstName}
               />
             </div>
           </div>
           <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>Initiala tatalui: </div>
-            <div className={`font-bold`}>{user.profile.fathersInitial}</div>
             <div>
               <FathersInitialInput
+                onChange={null}
+                showValue
+                showLabel
                 userId={user._id.toString()}
-                userFatherInitial={user.profile.fathersInitial}
+                fatherInitial={user.profile.fathersInitial}
               />
             </div>
           </div>
           <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>Clasa: </div>
-            <div className={`font-bold`}>
-              {user.profile.userClass.gradeLevel}
-            </div>
             <div>
               <GradeLevelInput
+                onChange={null}
+                showValue
+                showLabel
                 userId={user._id.toString()}
-                userGradeLevel={user.profile.userClass.gradeLevel}
+                gradeLevel={user.profile.userClass.gradeLevel}
               />
             </div>
           </div>
           <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>Sectiunea: </div>
-            <div className={`font-bold`}>{user.profile.userClass.section}</div>
             <div>
               <SectionInput
+                onChange={null}
+                showValue
+                showLabel
                 userId={user._id.toString()}
-                userSection={user.profile.userClass.section}
+                section={user.profile.userClass.section}
               />
             </div>
           </div>

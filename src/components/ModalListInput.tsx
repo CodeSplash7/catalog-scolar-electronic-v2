@@ -77,10 +77,12 @@ export default function ModalListInput({
   };
 
   return (
-    <div className="flex flex-col items-start w-full overflow-x-hidden">
-      {label && <label className="text-lg">{label}:</label>}
+    <div className="flex flex-row gap-[8px] items-start w-full overflow-x-hidden">
+      {label && (
+        <label className="text-lg text-slate-700 w-fit">{label}:</label>
+      )}
       {!!triggerButton ? (
-        <div onClick={() => setIsModalOpen(!isModalOpen)} className={`w-full`}>
+        <div onClick={() => setIsModalOpen(!isModalOpen)} className={`w-fit`}>
           {triggerButton}
         </div>
       ) : (

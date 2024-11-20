@@ -32,13 +32,17 @@ export default async function CatalogulMeuPage() {
   if (!session) {
     redirect(routes.signin());
   }
-
   const { result: user, error: userError } = await getUserById(session.user.id);
-  if (userError || !user) throw userError;
+  if (userError || !user) {
+    throw userError;
+  }
 
   const { result: curriculum, error: curriculumError } =
     await getCurriculumById(user.profile.curriculumId);
-  if (curriculumError || !curriculum) throw curriculumError;
+
+  if (curriculumError || !curriculum) {
+    throw curriculumError;
+  }
 
   return (
     <div className="flex flex-col w-full h-fit px-[16px] gap-[36px]">

@@ -1,5 +1,10 @@
 "use server";
-import { UserClass, UserDocument } from "@/types/user-types";
+import {
+  UserClass,
+  UserClassGradeLevel,
+  UserClassSection,
+  UserDocument
+} from "@/types/user-types";
 import { Collection, Db, MongoClient, ObjectId } from "mongodb";
 import clientPromise from "@/mongodb/index";
 import { hashPassword } from "@/server-utils/password-functions";
@@ -11,6 +16,7 @@ import {
 import { handleBasicFetchError } from "@/general-utils/handleBasicFetchError";
 import removeDuplicateSpaces from "@/general-utils/removeDuplicateSpaces";
 import { generateUsername } from "@/general-utils/generateUsername";
+import { createNewCurriculum } from "./curriculums";
 
 // Document with different ids type
 type UserDocumentWithObjectId = WithObjectId<UserDocument>;
@@ -116,22 +122,23 @@ export const getUserById = async (
 export const createNewUser = async (newUserInfo: {
   password: string;
   username: string;
-  email: string;
-  userClass: UserClass;
+  // userClass: UserClass;
+  gradeLevel: UserClassGradeLevel;
+  section: UserClassSection;
   firstName: string;
   lastName: string;
-  fathersInitial: string;
+  fatherInitial: string;
 }): SingleUserFetchPromiseWithObjectId => {
   try {
     if (!users) await init();
     const {
       username,
-      email,
       password,
-      userClass,
+      gradeLevel,
+      section,
       firstName,
       lastName,
-      fathersInitial
+      fatherInitial: fathersInitial
     } = newUserInfo;
     const { salt, hash } = hashPassword(password);
 
@@ -143,17 +150,21 @@ export const createNewUser = async (newUserInfo: {
     const validLastName = removeDuplicateSpaces(lastName);
     const validFathersInitial = removeDuplicateSpaces(fathersInitial);
 
+    const { result: newCurriculum, error: newCurriculumError } =
+      await createNewCurriculum();
+    if (newCurriculumError || !newCurriculum)
+      throw "Failed to create new curriculum: " + newCurriculumError;
+
     const newUserDocument: UserDocument = {
       profile: {
-        userClass,
+        userClass: { gradeLevel, section },
         firstName: validFirstName,
         lastName: validLastName,
         fathersInitial: validFathersInitial,
         username: generateUsername(validFirstName, validLastName),
-        curriculumId: "" // TODO: Gotta handle this somehow too
+        curriculumId: newCurriculum?._id.toString()
       },
       account: {
-        email,
         password: { salt, hash },
         subscriptionId: "" // TODO: Gotta handle this somehow too
       }

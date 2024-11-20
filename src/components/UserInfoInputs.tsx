@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import ModalListInput from "./ModalListInput";
 import {
   updateUserFatherInitial,
@@ -10,16 +10,24 @@ import {
   updateUserSection
 } from "@/server-utils/user-functions";
 import { UserClassGradeLevel, UserClassSection } from "@/types/user-types";
-const StringInput = ({
+export const StringInput = ({
   initialValue,
   saveChanges,
   label,
-  placeholder
+  placeholder,
+  name,
+  onChange,
+  headLabel,
+  showValue
 }: {
+  headLabel: string | null;
+  showValue: boolean;
+  name: string;
   label: string;
   placeholder: string;
   initialValue: string;
   saveChanges: (newValue: string) => void;
+  onChange: null | ((e: React.ChangeEvent<HTMLInputElement>) => void);
 }) => {
   const [value, setValue] = useState(initialValue);
   const handleSaveChanges = () => {
@@ -37,37 +45,62 @@ const StringInput = ({
 
   return (
     <ModalListInput
-      label={null}
+      label={headLabel}
       addItem={false}
       deleteAll={false}
       revertChanges={revertChanges}
       saveChanges={handleSaveChanges}
       triggerLabel={label}
-      triggerButton={<EditInfoIcon />}
+      triggerButton={
+        <div className={`flex gap-[8px]`}>
+          {showValue && (
+            <div className={`text-slate-700 underline font-bold`}>
+              {value || "___"}
+            </div>
+          )}
+          <EditInfoIcon />
+        </div>
+      }
     >
       <input
+        name={name}
         type="text"
         className={`bg-slate-200 p-2 text-lg w-full`}
         value={value}
         placeholder={placeholder}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onChange?.(e);
+        }}
       />
     </ModalListInput>
   );
 };
 
-const SelectInput = ({
+export const SelectInput = ({
   initialValue,
   options,
   saveChanges,
   label,
-  placeholder
+  placeholder,
+  onChange,
+  headLabel,
+  showValue,
+  name
 }: {
+  headLabel: string | null;
+  showValue: boolean;
   label: string;
+  name: string;
   placeholder: string;
   initialValue: string;
   options: string[];
   saveChanges: (newValue: string) => void;
+  onChange:
+    | null
+    | ((
+        e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+      ) => void);
 }) => {
   const [value, setValue] = useState(initialValue);
 
@@ -85,18 +118,29 @@ const SelectInput = ({
 
   return (
     <ModalListInput
-      label={null}
+      label={headLabel}
       addItem={false}
       deleteAll={false}
       revertChanges={revertChanges}
       saveChanges={handleSaveChanges}
       triggerLabel={label}
-      triggerButton={<EditInfoIcon />}
+      triggerButton={
+        <div className={`flex gap-[8px]`}>
+          {showValue && (
+            <div className={`text-slate-700 underline font-bold`}>{value || "___"}</div>
+          )}
+          <EditInfoIcon />
+        </div>
+      }
     >
       <select
+        name={name}
         className="bg-slate-200 p-2 text-lg w-full"
         value={value ?? "-"}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => {
+          setValue(e.target.value);
+          onChange?.(e);
+        }}
       >
         <option value="" disabled>
           {placeholder}
@@ -113,22 +157,33 @@ const SelectInput = ({
 
 export function LastNameInput({
   userId,
-  userLastName
+  lastName,
+  onChange,
+  showLabel,
+  showValue
 }: {
-  userId: string;
-  userLastName: string;
+  userId: string | null;
+  showLabel: boolean;
+  showValue: boolean;
+  lastName: string;
+  onChange: null | ((e: React.ChangeEvent<HTMLInputElement>) => void);
 }) {
-  const [initialValue, setInitialValue] = useState(userLastName);
+  const [initialValue, setInitialValue] = useState(lastName);
   const saveLastName = (v: string) => {
     setInitialValue(v);
-    (async () => {
-      await updateUserLastName(userId, v);
-    })();
+    userId &&
+      (async () => {
+        await updateUserLastName(userId, v);
+      })();
   };
   return (
     <StringInput
+      onChange={onChange}
+      name={"lastName"}
       saveChanges={saveLastName}
       initialValue={initialValue}
+      headLabel={showLabel ? "Numele de familie" : null}
+      showValue={showValue}
       label="Schimba numele de familie"
       placeholder="Numele de familie..."
     />
@@ -137,22 +192,33 @@ export function LastNameInput({
 
 export function FirstNameInput({
   userId,
-  userFirstName
+  firstName,
+  onChange,
+  showLabel,
+  showValue
 }: {
-  userId: string;
-  userFirstName: string;
+  userId: string | null;
+  showLabel: boolean;
+  showValue: boolean;
+  firstName: string;
+  onChange: null | ((e: React.ChangeEvent<HTMLInputElement>) => void);
 }) {
-  const [initialValue, setInitialValue] = useState(userFirstName);
+  const [initialValue, setInitialValue] = useState(firstName);
 
   const saveFirstName = (v: string) => {
     setInitialValue(v);
-    (async () => {
-      await updateUserFirstName(userId, v);
-    })();
+    userId &&
+      (async () => {
+        await updateUserFirstName(userId, v);
+      })();
   };
 
   return (
     <StringInput
+      showValue={showValue}
+      headLabel={showLabel ? "Numele" : null}
+      onChange={onChange}
+      name="firstName"
       saveChanges={saveFirstName}
       initialValue={initialValue}
       label="Schimba numele"
@@ -163,22 +229,33 @@ export function FirstNameInput({
 
 export function FathersInitialInput({
   userId,
-  userFatherInitial
+  fatherInitial,
+  onChange,
+  showLabel,
+  showValue
 }: {
-  userId: string;
-  userFatherInitial: string;
+  userId: string | null;
+  showLabel: boolean;
+  showValue: boolean;
+  fatherInitial: string;
+  onChange: null | ((e: React.ChangeEvent<HTMLInputElement>) => void);
 }) {
-  const [initialValue, setInitialValue] = useState(userFatherInitial);
+  const [initialValue, setInitialValue] = useState(fatherInitial);
 
   const saveInitial = (v: string) => {
     setInitialValue(v);
-    (async () => {
-      await updateUserFatherInitial(userId, v);
-    })();
+    userId &&
+      (async () => {
+        await updateUserFatherInitial(userId, v);
+      })();
   };
 
   return (
     <StringInput
+      showValue={showValue}
+      headLabel={showLabel ? "Initiala tatalui" : null}
+      onChange={onChange}
+      name="fatherInitial"
       saveChanges={saveInitial}
       initialValue={initialValue}
       label="Schimba initiala numelui tatalui"
@@ -189,22 +266,37 @@ export function FathersInitialInput({
 
 export function GradeLevelInput({
   userId,
-  userGradeLevel
+  gradeLevel,
+  onChange,
+  showLabel,
+  showValue
 }: {
-  userId: string;
-  userGradeLevel: UserClassGradeLevel;
+  userId: string | null;
+  showLabel: boolean;
+  showValue: boolean;
+  gradeLevel: string;
+  onChange:
+    | null
+    | ((
+        e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+      ) => void);
 }) {
-  const [initialValue, setInitialValue] = useState(userGradeLevel);
+  const [initialValue, setInitialValue] = useState(gradeLevel);
 
   const saveGradeLevel = (v: string | null) => {
     setInitialValue(v as UserClassGradeLevel);
-    (async () => {
-      await updateUserGradeLevel(userId, v as UserClassGradeLevel);
-    })();
+    userId &&
+      (async () => {
+        await updateUserGradeLevel(userId, v as UserClassGradeLevel);
+      })();
   };
 
   return (
     <SelectInput
+      name="gradeLevel"
+      showValue={showValue}
+      headLabel={showLabel ? "Clasa" : null}
+      onChange={onChange}
       initialValue={initialValue}
       options={["V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"]}
       saveChanges={saveGradeLevel}
@@ -216,22 +308,37 @@ export function GradeLevelInput({
 
 export function SectionInput({
   userId,
-  userSection
+  section,
+  onChange,
+  showLabel,
+  showValue
 }: {
-  userId: string;
-  userSection: UserClassSection;
+  userId: string | null;
+  showLabel: boolean;
+  showValue: boolean;
+  section: string;
+  onChange:
+    | null
+    | ((
+        e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+      ) => void);
 }) {
-  const [initialValue, setInitialValue] = useState(userSection);
+  const [initialValue, setInitialValue] = useState(section);
 
   const saveSection = (v: string | null) => {
-    setInitialValue(v as UserClassSection);
-    (async () => {
-      await updateUserSection(userId, v as UserClassSection);
-    })();
+    setInitialValue(v as UserClassGradeLevel);
+    userId &&
+      (async () => {
+        await updateUserSection(userId, v as UserClassSection);
+      })();
   };
 
   return (
     <SelectInput
+      name="section"
+      showValue={showValue}
+      headLabel={showLabel ? "Sectiunea" : null}
+      onChange={onChange}
       initialValue={initialValue}
       options={["A", "B", "C", "D", "E", "-"]}
       saveChanges={saveSection}

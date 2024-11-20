@@ -30,7 +30,6 @@ export interface UserClass {
 
 export interface UserAccount {
   subscriptionId: string; // ObjectId
-  email: string;
   password: UserPassword;
 }
 
