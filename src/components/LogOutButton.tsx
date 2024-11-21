@@ -3,7 +3,7 @@
 import { magra_700 } from "@/fonts";
 import { signOut } from "next-auth/react";
 
-export default async function LogOutButton() {
+export default function LogOutButton() {
   return (
     <div
       onClick={() => signOut()}

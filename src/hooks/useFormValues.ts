@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function useFormValues<T extends { [key: string]: any }>(
+export default function useFormValues<T extends { [key: string]: string }>(
   formValues: T
 ) {
   const [form, setForm] = useState(formValues);

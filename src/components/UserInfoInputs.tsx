@@ -173,10 +173,10 @@ export function LastNameInput({
   const [initialValue, setInitialValue] = useState(lastName);
   const saveLastName = (v: string) => {
     setInitialValue(v);
-    userId &&
-      (async () => {
-        await updateUserLastName(userId, v);
-      })();
+    async function update() {
+      if (userId) await updateUserLastName(userId, v);
+    }
+    update();
   };
   return (
     <StringInput
@@ -209,10 +209,10 @@ export function FirstNameInput({
 
   const saveFirstName = (v: string) => {
     setInitialValue(v);
-    userId &&
-      (async () => {
-        await updateUserFirstName(userId, v);
-      })();
+    async function update() {
+      if (userId) await updateUserFirstName(userId, v);
+    }
+    update();
   };
 
   return (
@@ -246,10 +246,10 @@ export function FathersInitialInput({
 
   const saveInitial = (v: string) => {
     setInitialValue(v);
-    userId &&
-      (async () => {
-        await updateUserFatherInitial(userId, v);
-      })();
+    async function update() {
+      if (userId) await updateUserFatherInitial(userId, v);
+    }
+    update();
   };
 
   return (
@@ -287,10 +287,10 @@ export function GradeLevelInput({
 
   const saveGradeLevel = (v: string | null) => {
     setInitialValue(v as UserClassGradeLevel);
-    userId &&
-      (async () => {
-        await updateUserGradeLevel(userId, v as UserClassGradeLevel);
-      })();
+    async function update() {
+      if (userId) await updateUserGradeLevel(userId, v as UserClassGradeLevel);
+    }
+    update();
   };
 
   return (
@@ -329,10 +329,11 @@ export function SectionInput({
 
   const saveSection = (v: string | null) => {
     setInitialValue(v as UserClassGradeLevel);
-    userId &&
-      (async () => {
-        await updateUserSection(userId, v as UserClassSection);
-      })();
+    async function update() {
+      if (userId) await updateUserSection(userId, v as UserClassSection);
+    }
+
+    update();
   };
 
   return (
