@@ -1,5 +1,4 @@
 import options, { CustomSession } from "@/app/api/auth/[...nextauth]/options";
-import ChangeSubjectsOrder from "@/components/ChangeSubjectsOrder";
 import {
   FathersInitialInput,
   FirstNameInput,
@@ -7,15 +6,15 @@ import {
   LastNameInput,
   SectionInput
 } from "@/components/UserInfoInputs";
-import ModalListInput from "@/components/ModalListInput";
-import { magra_400, magra_700 } from "@/fonts";
+import { magra_700 } from "@/fonts";
 import routes from "@/general-utils/page-routes";
 import { getCurriculumById } from "@/mongodb/curriculums";
 import { getUserById } from "@/mongodb/users";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import LogOutButton from "@/components/LogOutButton";
+import Welcome from "@/components/Welcome";
+import ControlPanel from "@/components/ControlPanel";
 
 export default async function PanouDeControlPage() {
   const session = (await getServerSession(options)) as CustomSession;
@@ -23,14 +22,11 @@ export default async function PanouDeControlPage() {
     redirect(routes.signin());
   }
 
-  // Fetch User
-  const { result: user, error: userError } = await getUserById(
-    // session.user.name
-    session.user.id
-  );
+  // User
+  const { result: user, error: userError } = await getUserById(session.user.id);
   if (userError || !user) throw userError;
 
-  // Fetch curriculum
+  // Curriculum
   const { result: curriculum, error: curriculumError } =
     await getCurriculumById(user.profile.curriculumId);
   if (curriculumError || !curriculum) throw curriculumError;
@@ -42,47 +38,9 @@ export default async function PanouDeControlPage() {
       <div className="w-full h-fit flex justify-end">
         <LogOutButton />
       </div>
-      <div className={`${magra_400.className} text-[30px] text-blue-600`}>
-        BINE AI VENIT!{" "}
-        <div className={`${magra_700.className} text-gray-900 w-fit`}>
-          {user.profile.username}
-        </div>
-      </div>
+      <Welcome username={user.profile.username} />
 
-      <div className={`w-full h-fit flex flex-col gap-[16px]`}>
-        <div
-          className={`underline text-[30px] tracking-[2px] ${magra_700.className}`}
-        >
-          Panou de control
-        </div>
-        <div className={`w-full h-fit flex flex-col gap-[8px]`}>
-          <Link
-            href={`/create/${curriculum._id}`}
-            className={`text-white text-center bg-[#007bff] px-[16px] py-[8px] rounded-md`}
-          >
-            Creeaza o materia nouă
-          </Link>
-          <ChangeSubjectsOrder curriculumId={curriculum._id.toString()} />
-          <ModalListInput
-            label={null}
-            addItem={false}
-            deleteAll={false}
-            revertChanges={false}
-            saveChanges={false}
-            triggerLabel="Modifica o materie"
-          >
-            {curriculum.subjects.map((s) => (
-              <Link
-                key={s.id.$oid}
-                className={`underline`}
-                href={routes.edit(curriculum._id.toString(), s.id.$oid)}
-              >
-                {s.subjectName}
-              </Link>
-            ))}
-          </ModalListInput>
-        </div>
-      </div>
+      <ControlPanel curriculum={curriculum} />
       <div className={`w-full h-fit flex flex-col gap-[16px]`}>
         <div
           className={`underline text-[30px] tracking-[2px] ${magra_700.className}`}
@@ -90,61 +48,41 @@ export default async function PanouDeControlPage() {
           Datele tale
         </div>
         <div className={`w-full h-fit flex flex-col gap-[24px]`}>
-          <div className={`w-full h-fit flex gap-[8px] items-center`}>
-            <div>
-              <LastNameInput
-                onChange={null}
-                showValue
-                showLabel
-                userId={user._id.toString()}
-                lastName={user.profile.lastName}
-              />
-            </div>
-          </div>
-          <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>
-              <FirstNameInput
-                onChange={null}
-                showValue
-                showLabel
-                userId={user._id.toString()}
-                firstName={user.profile.firstName}
-              />
-            </div>
-          </div>
-          <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>
-              <FathersInitialInput
-                onChange={null}
-                showValue
-                showLabel
-                userId={user._id.toString()}
-                fatherInitial={user.profile.fathersInitial}
-              />
-            </div>
-          </div>
-          <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>
-              <GradeLevelInput
-                onChange={null}
-                showValue
-                showLabel
-                userId={user._id.toString()}
-                gradeLevel={user.profile.userClass.gradeLevel}
-              />
-            </div>
-          </div>
-          <div className={`w-full h-fit flex gap-[8px]`}>
-            <div>
-              <SectionInput
-                onChange={null}
-                showValue
-                showLabel
-                userId={user._id.toString()}
-                section={user.profile.userClass.section}
-              />
-            </div>
-          </div>
+          <LastNameInput
+            onChange={null}
+            showValue
+            showLabel
+            userId={user._id.toString()}
+            lastName={user.profile.lastName}
+          />
+          <FirstNameInput
+            onChange={null}
+            showValue
+            showLabel
+            userId={user._id.toString()}
+            firstName={user.profile.firstName}
+          />
+          <FathersInitialInput
+            onChange={null}
+            showValue
+            showLabel
+            userId={user._id.toString()}
+            fatherInitial={user.profile.fathersInitial}
+          />
+          <GradeLevelInput
+            onChange={null}
+            showValue
+            showLabel
+            userId={user._id.toString()}
+            gradeLevel={user.profile.userClass.gradeLevel}
+          />
+          <SectionInput
+            onChange={null}
+            showValue
+            showLabel
+            userId={user._id.toString()}
+            section={user.profile.userClass.section}
+          />
         </div>
       </div>
     </div>

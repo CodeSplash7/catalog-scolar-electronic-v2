@@ -127,7 +127,9 @@ export const SelectInput = ({
       triggerButton={
         <div className={`flex gap-[8px]`}>
           {showValue && (
-            <div className={`text-slate-700 underline font-bold`}>{value || "___"}</div>
+            <div className={`text-slate-700 underline font-bold`}>
+              {value || "___"}
+            </div>
           )}
           <EditInfoIcon />
         </div>
@@ -347,6 +349,60 @@ export function SectionInput({
     />
   );
 }
+
+export const UsernameInput = ({
+  username,
+  onChange
+}: {
+  username: string;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+  ) => void;
+}) => {
+  return (
+    <div className="mt-1 text-sm leading-5">
+      <label htmlFor="username" className="block mb-1 text-gray-700">
+        Nume de utilizator
+      </label>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        placeholder=""
+        value={username}
+        onChange={onChange}
+        className="w-full rounded-md border border-gray-800 bg-gray-100 p-3 text-gray-800 outline-none focus:border-blue-500"
+      />
+    </div>
+  );
+};
+
+export const PasswordInput = ({
+  password,
+  onChange
+}: {
+  password: string;
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+  ) => void;
+}) => {
+  return (
+    <div className="mt-4 text-sm leading-5">
+      <label htmlFor="password" className="block text-gray-700 mb-1">
+        Parola
+      </label>
+      <input
+        type="password"
+        name="password"
+        id="password"
+        placeholder=""
+        value={password}
+        onChange={onChange}
+        className="w-full rounded-md border border-gray-800 bg-gray-100 p-3 text-gray-800 outline-none focus:border-blue-500"
+      />
+    </div>
+  );
+};
 
 const EditInfoIcon = () => (
   <svg
